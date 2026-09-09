@@ -1,5 +1,8 @@
 import os
 import subprocess
+from pathlib import Path
+import subprocess
+import shutil
 
 # Mã LaTeX đã được làm sạch, bọc bằng standalone
 latex_code = r"""
@@ -168,15 +171,116 @@ latex_code = r"""
 \end{document}
 """
 
-with open('Figure.tex', 'w', encoding='utf-8') as f:
+# =========================================================
+# OUTPUT SETTINGS
+# =========================================================
+
+OUTPUT_DIR = Path("Figure")
+OUTPUT_NAME = "Taxonomy"
+PNG_DPI = 300
+
+# Tạo folder Figure nếu chưa tồn tại
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+tex_path = OUTPUT_DIR / f"{OUTPUT_NAME}.tex"
+pdf_path = OUTPUT_DIR / f"{OUTPUT_NAME}.pdf"
+png_path = OUTPUT_DIR / f"{OUTPUT_NAME}.png"
+
+# =========================================================
+# CHECK REQUIRED PROGRAMS
+# =========================================================
+
+if shutil.which("pdflatex") is None:
+    raise RuntimeError(
+        "Không tìm thấy pdflatex. "
+        "Hãy cài TeX Live hoặc MiKTeX và thêm pdflatex vào PATH."
+    )
+
+if shutil.which("pdftoppm") is None:
+    raise RuntimeError(
+        "Không tìm thấy pdftoppm. "
+        "Hãy cài Poppler và thêm pdftoppm vào PATH."
+    )
+
+# =========================================================
+# WRITE LATEX FILE
+# =========================================================
+
+with open(tex_path, "w", encoding="utf-8") as f:
     f.write(latex_code.strip())
 
-# Compile to PDF
-subprocess.run(['pdflatex', '-interaction=nonstopmode', 'Figure.tex'], check=True)
+print(f"Đã tạo: {tex_path}")
 
-# Dọn dẹp file thừa (tùy chọn)
-for ext in [".aux", ".log"]:
-    if os.path.exists(f"Figure{ext}"):
-        os.remove(f"Figure{ext}")
+# =========================================================
+# COMPILE LATEX -> PDF
+# =========================================================
 
-print("Quá trình xuất hoàn tất!")
+subprocess.run(
+    [
+        "pdflatex",
+        "-interaction=nonstopmode",
+        "-halt-on-error",
+        "-output-directory",
+        str(OUTPUT_DIR),
+        str(tex_path)
+    ],
+    check=True
+)
+
+if not pdf_path.exists():
+    raise RuntimeError(f"Không tạo được file PDF: {pdf_path}")
+
+print(f"Đã tạo PDF: {pdf_path}")
+
+# =========================================================
+# CONVERT PDF -> PNG
+# =========================================================
+
+# pdftoppm tự thêm .png vào output prefix
+png_prefix = OUTPUT_DIR / OUTPUT_NAME
+
+subprocess.run(
+    [
+        "pdftoppm",
+        "-png",
+        "-singlefile",
+        "-r",
+        str(PNG_DPI),
+        str(pdf_path),
+        str(png_prefix)
+    ],
+    check=True
+)
+
+if not png_path.exists():
+    raise RuntimeError(f"Không tạo được file PNG: {png_path}")
+
+print(f"Đã tạo PNG: {png_path}")
+
+# =========================================================
+# REMOVE TEMPORARY FILES
+# =========================================================
+
+temporary_files = [
+    OUTPUT_DIR / f"{OUTPUT_NAME}.aux",
+    OUTPUT_DIR / f"{OUTPUT_NAME}.log",
+    OUTPUT_DIR / f"{OUTPUT_NAME}.out",
+    OUTPUT_DIR / f"{OUTPUT_NAME}.tex",
+]
+
+for file_path in temporary_files:
+    if file_path.exists():
+        file_path.unlink()
+
+# =========================================================
+# FINISHED
+# =========================================================
+
+print()
+print("=" * 60)
+print("Quá trình xuất taxonomy hoàn tất!")
+print("=" * 60)
+print(f"PDF : {pdf_path}")
+print(f"PNG : {png_path}")
+print(f"DPI : {PNG_DPI}")
+print("=" * 60)

@@ -20,7 +20,7 @@ Within each terminal category, papers are listed from newer to older work where 
 
 Below is the taxonomy summarizing the Human–AI Alignment landscape:
 
-[![Human–AI Alignment Taxonomy](./Figure/Taxonomy.png)](./Figure/Taxonomy.pdf)
+![Human–AI Alignment Taxonomy](./Figure/Taxonomy.png)
 
 📄 [View the high-resolution taxonomy PDF](./Figure/Taxonomy.pdf)
 
