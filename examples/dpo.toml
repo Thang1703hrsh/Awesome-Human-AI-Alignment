@@ -1,0 +1,18 @@
+method = "dpo"
+model = "Qwen/Qwen3-0.6B"
+dataset = "trl-lib/ultrafeedback_binarized"
+output_dir = "outputs/qwen-dpo"
+
+[target]
+name = "preference-implied-target"
+description = "The target is represented implicitly by the supplied preference data."
+uncertainty = 1.0
+
+[training]
+beta = 0.1
+learning_rate = 1e-6
+epochs = 1.0
+batch_size = 2
+gradient_accumulation_steps = 8
+max_length = 1024
+seed = 42

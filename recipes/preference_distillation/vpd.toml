@@ -1,0 +1,13 @@
+method = "vpd"
+model = "models/student_sft"
+dataset = "data/preference-distillation"
+output_dir = "outputs/student_vpd"
+
+[training]
+learning_rate = 8e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 64
+max_length = 2048
+max_prompt_length = 512
+beta = 10.0

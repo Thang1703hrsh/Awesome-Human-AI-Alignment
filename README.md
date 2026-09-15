@@ -19,6 +19,91 @@ This repository supports an ongoing survey of **Human–AI Alignment**. The orga
 
 The branches are intentionally non-exclusive. A paper can appear in several places when it contributes to more than one alignment question. The compact figure emphasizes recent and representative work from 2023 onward; the collection below also retains foundational papers and maps every citation key in the bibliography.
 
+## Software framework
+
+The repository also provides a Python framework that mirrors the four lifecycle dimensions while keeping common workflows simple. The core has no runtime dependencies; training libraries are installed only for the methods that need them.
+
+```bash
+python -m pip install -e .
+hai-align catalog validate
+python examples/minimal_pipeline.py
+```
+
+To train with DPO:
+
+```bash
+python -m pip install -e ".[dpo]"
+hai-align train dpo --model Qwen/Qwen3-0.6B --dataset trl-lib/ultrafeedback_binarized --output outputs/qwen-dpo
+```
+
+```python
+from human_alignment import DPO
+
+run = DPO(
+    model="Qwen/Qwen3-0.6B",
+    dataset="trl-lib/ultrafeedback_binarized",
+    output_dir="outputs/qwen-dpo",
+).train()
+
+print(run.generate("What is Human--AI alignment?"))
+```
+
+See [Codebase architecture](./docs/CODEBASE.md) for the public API and extension points. The machine-readable taxonomy lives in [`src/human_alignment/catalog/data/taxonomy.json`](./src/human_alignment/catalog/data/taxonomy.json).
+
+Preference distillation is available through one consistent API for VPD, PPD,
+DCKD, TVKD, ADPA, and CTPD:
+
+```bash
+python -m pip install -e ".[distillation]"
+```
+
+```python
+from human_alignment import VPD, PreferenceDistillationExample
+
+data = [
+    PreferenceDistillationExample(
+        prompt="Explain alignment briefly.",
+        responses=("Alignment connects behavior to human targets.", "It is model scaling."),
+        teacher_scores=(1.0, 0.0),
+    )
+]
+run = VPD(model="student-model", dataset=data, output_dir="outputs/student-vpd").train()
+```
+
+See [Preference distillation](./docs/PREFERENCE_DISTILLATION.md) for objective-specific
+dataset schemas, teacher-model use, and migration details.
+
+The library supports both ends of an alignment experiment:
+
+```python
+from human_alignment import DPO, load_checkpoint
+
+# Fine-tune a pretrained model or an existing checkpoint.
+trained = DPO(
+    model="models/student_sft",
+    dataset="data/preferences",
+    output_dir="outputs/student_dpo",
+).train()
+
+# Load the resulting checkpoint later for inference or assurance.
+checkpoint = load_checkpoint(
+    "outputs/student_dpo",
+    config={"device_map": "auto", "torch_dtype": "bfloat16"},
+)
+print(checkpoint.generate("Explain alignment."))
+```
+
+Preference-distillation supervision can be prepared without the temporary
+research scripts:
+
+```bash
+hai-align prepare distillation dckd \
+  --dataset HuggingFaceH4/ultrafeedback_binarized \
+  --teacher models/teacher_dpo \
+  --tokenizer models/student_sft \
+  --output data/ultrafeedback-dckd
+```
+
 ## Taxonomy
 
 <p align="center">

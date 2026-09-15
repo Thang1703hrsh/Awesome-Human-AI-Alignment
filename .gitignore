@@ -3,3 +3,17 @@ taxonomy_full_mapping.tex
 taxonomy_mapping.md
 taxonomy.tex
 main.tex
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+dist/
+build/
+
+# Local experiment outputs
+runs/
+artifacts/

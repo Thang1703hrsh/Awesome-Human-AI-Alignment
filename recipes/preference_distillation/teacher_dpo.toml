@@ -1,0 +1,15 @@
+method = "dpo"
+model = "models/teacher_sft"
+dataset = "HuggingFaceH4/ultrafeedback_binarized"
+output_dir = "models/teacher_dpo"
+
+[training]
+learning_rate = 5e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 16
+max_length = 2048
+beta = 0.1
+
+[method_options.backend_options]
+dataset_split = "train_prefs"

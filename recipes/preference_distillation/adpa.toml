@@ -1,0 +1,14 @@
+method = "adpa"
+model = "models/student_sft"
+dataset = "data/ultrafeedback-adpa"
+output_dir = "outputs/student_adpa"
+
+[training]
+learning_rate = 5e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 32
+max_length = 1024
+max_prompt_length = 512
+objective_weight = 1.6
+sft_weight = 1.0

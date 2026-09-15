@@ -1,0 +1,20 @@
+method = "dckd"
+model = "models/student_sft"
+dataset = "data/ultrafeedback-dckd"
+output_dir = "outputs/student_dckd"
+
+[training]
+learning_rate = 5e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 32
+max_length = 1024
+max_prompt_length = 512
+sft_weight = 1.0
+chosen_kd_weight = 0.1
+rejected_kd_weight = 0.1
+
+[training.extra_args]
+gradient_checkpointing = true
+save_strategy = "steps"
+save_steps = 100

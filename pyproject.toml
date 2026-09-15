@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "human-ai-alignment"
+version = "0.4.0"
+description = "A taxonomy-guided framework for composing and evaluating Human-AI alignment workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Awesome Human-AI Alignment contributors" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.8"]
+dpo = ["accelerate", "datasets", "torch", "transformers", "trl"]
+sft = ["accelerate", "datasets", "torch", "transformers", "trl"]
+trl = ["accelerate", "datasets", "torch", "transformers", "trl"]
+distillation = ["accelerate>=0.26", "datasets>=2.18", "torch>=2.1", "transformers>=4.46"]
+inference = ["torch", "transformers"]
+peft = ["peft>=0.13", "torch>=2.1", "transformers>=4.46"]
+vllm = ["vllm"]
+all = ["accelerate", "datasets", "peft", "torch", "transformers", "trl", "vllm"]
+
+[project.scripts]
+hai-align = "human_alignment.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = false
+
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__/*", "*.pyc"]
+
+[tool.setuptools.package-data]
+"human_alignment.catalog" = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

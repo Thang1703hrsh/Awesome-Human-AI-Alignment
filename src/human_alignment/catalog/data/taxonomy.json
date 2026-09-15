@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "dimensions": [
+    {
+      "id": "alignment_specification",
+      "name": "Alignment Specification",
+      "question": "What should the system align to, and whose objectives and values should count?",
+      "groups": [
+        {
+          "id": "alignment_objectives",
+          "name": "Alignment Objectives",
+          "categories": [
+            {"id": "task_assistance_alignment", "name": "Task & Assistance Alignment"},
+            {"id": "safety_alignment", "name": "Safety Alignment"}
+          ]
+        },
+        {
+          "id": "values_stakeholders",
+          "name": "Values & Stakeholders",
+          "categories": [
+            {"id": "personalized_alignment", "name": "Personalized Alignment"},
+            {"id": "pluralistic_societal_alignment", "name": "Pluralistic & Societal Alignment"},
+            {"id": "uncertainty_drift", "name": "Uncertainty & Drift"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alignment_supervision",
+      "name": "Alignment Supervision",
+      "question": "Where do alignment signals come from, and how are they expressed and scaled?",
+      "groups": [
+        {
+          "id": "feedback_source",
+          "name": "Feedback Source",
+          "categories": [
+            {"id": "human_feedback", "name": "Human Feedback"},
+            {"id": "ai_feedback", "name": "AI Feedback"},
+            {"id": "programmatic_verifiable_feedback", "name": "Programmatic & Verifiable Feedback"}
+          ]
+        },
+        {
+          "id": "feedback_oversight",
+          "name": "Feedback & Oversight",
+          "categories": [
+            {"id": "demonstrations_preferences", "name": "Demonstrations & Preferences"},
+            {"id": "critique_process_feedback", "name": "Critique & Process Feedback"},
+            {"id": "reliable_scalable_oversight", "name": "Reliable & Scalable Oversight"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alignment_mechanisms",
+      "name": "Alignment Mechanisms",
+      "question": "How are alignment signals translated into behavior during training and inference?",
+      "groups": [
+        {
+          "id": "training_time_alignment",
+          "name": "Training-Time Alignment",
+          "categories": [
+            {"id": "reward_verifier_modeling", "name": "Reward & Verifier Modeling"},
+            {"id": "supervised_alignment", "name": "Supervised Alignment"},
+            {"id": "preference_optimization", "name": "Preference Optimization"},
+            {"id": "reinforcement_learning", "name": "Reinforcement Learning"},
+            {"id": "alignment_distillation", "name": "Alignment Distillation"}
+          ]
+        },
+        {
+          "id": "inference_time_alignment",
+          "name": "Inference-Time Alignment",
+          "categories": [
+            {"id": "steering_search_refinement", "name": "Steering, Search & Refinement"},
+            {"id": "human_control", "name": "Human Control"}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alignment_assurance",
+      "name": "Alignment Assurance",
+      "question": "How is alignment evaluated, stress-tested, preserved, interpreted, and monitored?",
+      "groups": [
+        {
+          "id": "evaluation_robustness",
+          "name": "Evaluation & Robustness",
+          "categories": [
+            {"id": "behavioral_evaluator_evaluation", "name": "Behavioral & Evaluator Evaluation"},
+            {"id": "adversarial_distribution_robustness", "name": "Adversarial & Distribution Robustness"},
+            {"id": "alignment_preservation", "name": "Alignment Preservation"}
+          ]
+        },
+        {
+          "id": "system_assurance",
+          "name": "System Assurance",
+          "categories": [
+            {"id": "mechanistic_theoretical_evidence", "name": "Mechanistic & Theoretical Evidence"},
+            {"id": "monitoring_auditing", "name": "Monitoring & Auditing"}
+          ]
+        }
+      ]
+    }
+  ]
+}

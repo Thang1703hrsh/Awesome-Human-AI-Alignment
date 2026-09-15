@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/human-alignment/taxonomy.schema.json",
+  "title": "Human-AI Alignment Taxonomy",
+  "type": "object",
+  "required": ["schema_version", "dimensions"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "dimensions": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {"$ref": "#/$defs/dimension"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "named": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "name": {"type": "string", "minLength": 1}
+      }
+    },
+    "category": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+        "name": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "group": {
+      "type": "object",
+      "required": ["id", "name", "categories"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "categories": {"type": "array", "items": {"$ref": "#/$defs/category"}}
+      },
+      "additionalProperties": false
+    },
+    "dimension": {
+      "type": "object",
+      "required": ["id", "name", "question", "groups"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "question": {"type": "string"},
+        "groups": {"type": "array", "items": {"$ref": "#/$defs/group"}}
+      },
+      "additionalProperties": false
+    }
+  }
+}
