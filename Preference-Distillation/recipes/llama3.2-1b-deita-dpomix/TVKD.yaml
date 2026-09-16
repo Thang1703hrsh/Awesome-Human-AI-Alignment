@@ -1,0 +1,62 @@
+#alpha 수정 버전. 원래 RQ_ref_from_dpo는 이 세팅이 맞음.
+#alpha는 run_distil_dpo 내부라서 처리가 귀찮아서 그냥 여기서 처리해버림
+# Model arguments
+model_name_or_path: models/student_dckd
+torch_dtype: bfloat16
+
+# Data training arguments
+# For definitions, see: src/h4/training/config.py
+dataset_mixer:
+  data/ultrafeedback_binarized-dckd: 1.0
+dataset_splits:
+- train
+preprocessing_num_workers: 12
+overwrite_output_dir: false
+
+# DPOTrainer arguments
+bf16: true
+do_eval: false
+gradient_accumulation_steps: 16
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: False
+learning_rate: 5.0e-7
+log_level: info
+logging_steps: 1
+lr_scheduler_type: cosine
+max_length: 2048
+max_prompt_length: 1800
+num_train_epochs: 5
+optim: adamw_torch
+output_dir: models/tvkd
+per_device_train_batch_size: 1
+push_to_hub: false
+save_strategy: "steps"
+save_steps: 300
+save_only_model: true
+seed: 42
+warmup_ratio: 0.1
+dataset_num_proc: 64
+beta: 0.01
+
+
+# DPO
+sft_on_chosen: 0.0
+sft_on_rejected: 0.0
+dpo_weight: 0.00001
+distillation_weight: 1
+chosen_distil_weight: 0.0001
+rejected_distil_weight: 0.0001
+adpa_weight: 0
+qadapter_distil_weight: 1.0
+qadapter_loss_type: "dpo"
+kl_student_weight: 0.0
+kl_student_target: "both"
+precompute_ref_log_probs: false
+reference_free: false
+kl_penalty_weight: 0.0
+force_use_ref_model: true
+qadapter_alpha_tilde: 1.0
+qadapter_alpha: 0.7
+qadapter_alpha_1: 0.0
+qadapter_softvalue_type: "entropy"

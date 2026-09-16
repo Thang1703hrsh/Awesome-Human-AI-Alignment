@@ -1,0 +1,48 @@
+# Vanilla Preference Distillation (VPD), loss_type=rd.
+model_name_or_path: meta-llama/Llama-3.2-1B-Instruct
+torch_dtype: null
+attn_implementation: eager
+
+dataset_mixer:
+  data/generated/ultrafeedback/llama3.2-1b-it/pkd-dataset-teacher-llama3.1-8b-n4: 1.0
+dataset_splits:
+- train
+- test
+local_dataset: true
+preprocessing_num_workers: 12
+dataset_num_proc: 12
+overwrite_output_dir: false
+
+bf16: true
+beta: 10.0
+alpha: 0.0
+do_eval: true
+eval_strategy: steps
+eval_steps: 100
+loss_type: rd
+gradient_accumulation_steps: 64
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: False
+torch_empty_cache_steps: null
+hub_model_id: simpo-exps
+learning_rate: 8.0e-7
+log_level: info
+logging_steps: 5
+lr_scheduler_type: cosine
+max_length: 2048
+max_prompt_length: 1800
+num_train_epochs: 1
+optim: adamw_torch
+output_dir: outputs/llama3.2-1b-it-vpd
+run_name: llama3.2-1b-it-vpd
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+push_to_hub: false
+save_strategy: "steps"
+save_steps: 100
+report_to:
+- wandb
+save_total_limit: 20
+seed: 42
+warmup_ratio: 0.1
