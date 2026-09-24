@@ -930,7 +930,7 @@ Suggested inclusion criteria:
 - A stable manuscript or archival publication page is publicly available.
 - The bibliographic metadata can be independently checked.
 
-## Repository files
+<!-- ## Repository files
 
 | File | Purpose |
 |---|---|
@@ -938,7 +938,7 @@ Suggested inclusion criteria:
 | [`Figure/Taxonomy.pdf`](./Figure/Taxonomy.pdf) | High-resolution taxonomy figure |
 | [`Figure/Taxonomy.png`](./Figure/Taxonomy.png) | Taxonomy preview used in this README |
 | [`human_ai_alignment_refs.bib`](./human_ai_alignment_refs.bib) | Complete BibTeX database |
-| [`main.tex`](./main.tex) | Survey manuscript source |
+| [`main.tex`](./main.tex) | Survey manuscript source | -->
 
 ## Scope
 
