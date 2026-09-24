@@ -4,16 +4,66 @@ taxonomy_mapping.md
 taxonomy.tex
 main.tex
 
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.nav
+*.out
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+*.latexmain
+/Survey.pdf
+/main.pdf
+
 # Python
 __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
 .venv/
+venv/
+env/
 dist/
 build/
 
 # Local experiment outputs
 runs/
 artifacts/
+/output/
+
+# Temporary files and logs
+/tmp/
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

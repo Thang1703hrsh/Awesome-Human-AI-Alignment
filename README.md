@@ -4,20 +4,21 @@
 
 A taxonomy-guided collection of research on specifying, supervising, implementing, and assuring Human–AI Alignment.
 
-![Dimensions](https://img.shields.io/badge/dimensions-4-2f6f9f) ![Terminal branches](https://img.shields.io/badge/terminal_branches-23-2f6f9f) ![Works](https://img.shields.io/badge/unique_works-336-2f6f9f) ![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)
+![Dimensions](https://img.shields.io/badge/dimensions-4-2f6f9f) ![Terminal branches](https://img.shields.io/badge/terminal_branches-23-2f6f9f) ![Works](https://img.shields.io/badge/unique_works-416-2f6f9f) ![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)
 
 </div>
 
 ## News
 
-- **2026-09-10:** Expanded the collection to 336 unique works and synchronized all 23 branches with the revised taxonomy.
+- **2026-09-24:** Expanded the collection to 416 unique works and synchronized all 23 branches with the lifecycle taxonomy.
+- **2026-09-10:** Expanded the collection and synchronized all 23 branches with the revised taxonomy.
 - **2026-09-09:** Released the first public taxonomy and paper collection.
 
 ## Overview
 
 This repository supports an ongoing survey of **Human–AI Alignment**. The organization follows the complete alignment pipeline: what the system should align to, how feedback and oversight communicate those requirements, how training and inference mechanisms shape behavior, and how alignment claims are evaluated and maintained.
 
-The branches are intentionally non-exclusive. A paper can appear in several places when it contributes to more than one alignment question. The compact figure emphasizes recent and representative work from 2023 onward; the collection below also retains foundational papers and maps every citation key in the bibliography.
+The branches are intentionally non-exclusive. A paper can appear in several places when it contributes to more than one alignment question. The compact figure emphasizes recent and representative work from 2023 onward; the collection below also retains foundational papers and canonicalizes duplicate citation aliases.
 
 ## Software framework
 
@@ -121,9 +122,9 @@ hai-align prepare distillation dckd \
 
 ### Collection coverage
 
-- **238 figure assignments** covering **208 unique citation keys**.
-- **464 collection assignments** across 23 terminal branches; repeated placement is intentional.
-- **338 BibTeX records**, **337 unique citation keys**, and **336 unique normalized titles**.
+- **337 taxonomy assignments** covering **303 citation keys** before alias normalization.
+- **558 collection assignments** across 23 terminal branches; repeated placement is intentional.
+- **416 unique normalized titles** are linked from the collection.
 - **6 cross-cutting surveys** are listed separately after the branch collection.
 
 ### Cross-cutting descriptors
@@ -147,11 +148,11 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 | Group | Branch | Papers |
 |---|---|---:|
-| Alignment Objectives | [Task & Assistance Alignment](#task-assistance-alignment) | 27 |
-| Alignment Objectives | [Safety Alignment](#safety-alignment) | 17 |
-| Values & Stakeholders | [Personalized Alignment](#personalized-alignment) | 14 |
-| Values & Stakeholders | [Pluralistic & Societal Alignment](#pluralistic-societal-alignment) | 25 |
-| Values & Stakeholders | [Uncertainty & Drift](#uncertainty-drift) | 15 |
+| Alignment Objectives | [Task & Assistance Alignment](#task-assistance-alignment) | 35 |
+| Alignment Objectives | [Safety Alignment](#safety-alignment) | 25 |
+| Values & Stakeholders | [Personalized Alignment](#personalized-alignment) | 22 |
+| Values & Stakeholders | [Pluralistic & Societal Alignment](#pluralistic-societal-alignment) | 33 |
+| Values & Stakeholders | [Context, Uncertainty & Drift](#context-uncertainty-drift) | 23 |
 
 <a id="alignment-objectives"></a>
 
@@ -159,9 +160,17 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="task-assistance-alignment"></a>
 
-#### Task & Assistance Alignment (27)
+#### Task & Assistance Alignment (35)
 
+- **2026** · [Deconstructing Instruction-Following: A New Benchmark for Granular Evaluation of Large Language Model Instruction Compliance Abilities](https://doi.org/10.18653/v1/2026.eacl-long.62) — Purpura et al. · `purpura2026mosaic` · DOI
+- **2026** · [ReasonIF: Large Reasoning Models Fail to Follow Instructions During Reasoning](https://doi.org/10.18653/v1/2026.findings-acl.1456) — Kwon et al. · `kwon2026reasonif` · DOI
+- **2026** · [Revisiting the Reliability of Language Models in Instruction-Following](https://doi.org/10.18653/v1/2026.acl-long.354) — Dong et al. · `dong2026ifevalpp` · DOI
+- **2026** · [We Are What We Repeatedly Do: Improving Long Context Instruction Following](https://doi.org/10.18653/v1/2026.findings-eacl.254) — Robinette et al. · `robinette2026verify` · DOI
 - **2026** · [SFTMix: Elevating Language Model Instruction Tuning with Mixup Recipe](https://aclanthology.org/2026.acl-long.78/) — Xiao et al. · `xiao2026sftmix` · Paper
+- **2025** · [FB-Bench: A Fine-Grained Multi-Task Benchmark for Evaluating LLMs' Responsiveness to Human Feedback](https://aclanthology.org/2025.emnlp-main.471/) — Li et al. · `li2025fbbench` · Paper
+- **2025** · [IOPO: Empowering LLMs with Complex Instruction Following via Input-Output Preference Optimization](https://aclanthology.org/2025.acl-long.1079/) — Zhang et al. · `zhang2025iopo` · Paper
+- **2025** · [LongReward: Improving Long-context Large Language Models with AI Feedback](https://aclanthology.org/2025.acl-long.187/) — Zhang et al. · `zhang2025longreward` · Paper
+- **2025** · [When Instructions Multiply: Measuring and Estimating LLM Capabilities of Multiple Instructions Following](https://aclanthology.org/2025.findings-emnlp.896/) — Harada et al. · `harada2025manyifeval` · Paper
 - **2025** · [A Good Plan is Hard to Find: Aligning Models with Preferences is Misaligned with What Helps Users](https://aclanthology.org/2025.emnlp-main.585/) — Balepur et al. · `balepur2025goodplan` · Paper
 - **2025** · [Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing](https://proceedings.iclr.cc/paper_files/paper/2025/hash/be06e3802e9411381feece79b4d960c1-Abstract-Conference.html) — Xu et al. · `xu2025magpie` · Paper
 - **2025** · [UltraIF: Advancing Instruction Following from the Wild](https://aclanthology.org/2025.emnlp-main.945/) — An et al. · `an2025ultraif` · Paper
@@ -191,12 +200,20 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="safety-alignment"></a>
 
-#### Safety Alignment (17)
+#### Safety Alignment (25)
 
+- **2026** · [LLM-VA: Resolving the Jailbreak-Overrefusal Trade-off via Vector Alignment](https://aclanthology.org/2026.acl-long.260/) — Zhang et al. · `zhang2026llmva` · Paper
+- **2026** · [Mitigating Over-Refusal in Aligned Large Language Models via Inference-Time Activation Energy](https://aclanthology.org/2026.acl-long.1759/) — Jiang et al. · `jiang2026els` · Paper
+- **2026** · [More Thinking, Less Talking: Internalizing Deliberative Safety into LLM Parameters](https://aclanthology.org/2026.acl-long.1572/) — Wang et al. · `wang2026hiar` · Paper
+- **2026** · [Reasoning Structure Matters for Safety Alignment of Reasoning Models](https://aclanthology.org/2026.acl-long.240/) — In et al. · `in2026alttrain` · Paper
+- **2026** · [Safety Is Not Universal: The Selective Safety Trap in LLM Alignment](https://doi.org/10.18653/v1/2026.findings-acl.489) — Brito et al. · `brito2026safetyisnotuniversal` · DOI
 - **2026** · [AlphaAlign: Incentivizing Safety Alignment with Extremely Simplified Reinforcement Learning](https://iclr.cc/virtual/2026/poster/10011731) — Zhang et al. · `zhang2026alphaalign` · Paper
 - **2026** · [LASA: Language-Agnostic Semantic Alignment at the Semantic Bottleneck for LLM Safety](https://aclanthology.org/2026.acl-long.1913/) — Yang et al. · `yang2026lasa` · Paper
 - **2026** · [Mitigating the Safety Alignment Tax with Null-Space Constrained Policy Optimization](https://proceedings.iclr.cc/paper_files/paper/2026/hash/e664650506f1cf2b4696df892147c06e-Abstract-Conference.html) — Niu et al. · `niu2026nspo` · Paper
 - **2026** · [Safety at One Shot: Patching Fine-Tuned LLMs with A Single Instance](https://proceedings.iclr.cc/paper_files/paper/2026/hash/3d7cb780442f0d17c844dbe34997fab7-Abstract-Conference.html) — Zhang et al. · `zhang2026safetyoneshot` · Paper
+- **2025** · [POROver: Improving Safety and Reducing Overrefusal in Large Language Models with Overgeneration and Preference Optimization](https://proceedings.mlr.press/v267/karaman25a.html) — Karaman et al. · `karaman2025porover` · Paper
+- **2025** · [Safety Alignment Can Be Not Superficial With Explicit Safety Signals](https://proceedings.mlr.press/v267/li25av.html) — Li et al. · `li2025explicitsafety` · Paper
+- **2025** · [Shaping the Safety Boundaries: Understanding and Defending Against Jailbreaks in Large Language Models](https://aclanthology.org/2025.acl-long.1233/) — Gao et al. · `gao2025abd` · Paper
 - **2025** · [Alignment of Large Language Models with Constrained Learning](https://proceedings.nips.cc/paper_files/paper/2025/hash/2c9b48ed0dd0252ea3ea14182956341b-Abstract-Conference.html) — Zhang et al. · `zhang2025constrainedalignment` · Paper
 - **2025** · [Antidote: Post-fine-tuning Safety Alignment for Large Language Models against Harmful Fine-tuning Attack](https://proceedings.mlr.press/v267/huang25b.html) — Huang et al. · `huang2025antidote` · Paper
 - **2025** · [Layer-Aware Representation Filtering: Purifying Finetuning Data to Preserve LLM Safety Alignment](https://aclanthology.org/2025.emnlp-main.406/) — Li et al. · `li2025larf` · Paper
@@ -217,11 +234,19 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="personalized-alignment"></a>
 
-#### Personalized Alignment (14)
+#### Personalized Alignment (22)
 
+- **2026** · [Personalized Benchmarking: Evaluating LLMs by Individual Preferences](https://aclanthology.org/2026.findings-acl.31/) — Garbacea et al. · `garbacea2026personalizedbenchmark` · Paper
+- **2026** · [When Personalization Misleads: Understanding and Mitigating Hallucinations in Personalized LLMs](https://aclanthology.org/2026.findings-acl.395/) — Sun et al. · `sun2026fpps` · Paper
 - **2026** · [From 1,000,000 Users to Every User: Scaling Up Personalized Preference for User-level Alignment](https://aclanthology.org/2026.acl-long.1391/) — Li et al. · `li2026alignx` · Paper
 - **2026** · [Instant Personalized Large Language Model Adaptation via Hypernetwork](https://aclanthology.org/2026.acl-long.1081/) — Tan et al. · `tan2026profilepeft` · Paper
 - **2026** · [Personalizing LLMs with Binary Feedback: A Preference-Calibrated Optimization Framework](https://aclanthology.org/2026.acl-long.1222/) — Ma et al. · `ma2026cbpo` · Paper
+- **2025** · [Aligning LLMs with Individual Preferences via Interaction](https://aclanthology.org/2025.coling-main.511/) — Wu et al. · `wu2025interaction` · Paper
+- **2025** · [Drift: Decoding-time Personalized Alignments with Implicit User Preferences](https://aclanthology.org/2025.findings-emnlp.324/) — Kim et al. · `kim2025drift` · Paper
+- **2025** · [FaST: Feature-aware Sampling and Tuning for Personalized Preference Alignment with Limited Data](https://aclanthology.org/2025.emnlp-main.475/) — Thonet et al. · `thonet2025fast` · Paper
+- **2025** · [Personalized LLM Decoding via Contrasting Personal Preference](https://aclanthology.org/2025.emnlp-main.1723/) — Bu et al. · `bu2025cope` · Paper
+- **2025** · [Tuning-Free Personalized Alignment via Trial-Error-Explain In-Context Learning](https://aclanthology.org/2025.findings-naacl.326/) — Cho et al. · `cho2025ticl` · Paper
+- **2025** · [Whose Boat Does it Float? Improving Personalization in Preference Tuning via Inferred User Personas](https://aclanthology.org/2025.acl-long.168/) — Balepur et al. · `balepur2025personas` · Paper
 - **2025** · [A Survey on Personalized Alignment—The Missing Piece for Large Language Models in Real-World Applications](https://aclanthology.org/2025.findings-acl.277/) — Guan et al. · `guan2025personalizedsurvey` · Paper
 - **2025** · [Aligning LLMs by Predicting Preferences from User Writing Samples](https://proceedings.mlr.press/v267/aroca-ouellette25a.html) — Aroca-Ouellette et al. · `aroca2025prose` · Paper
 - **2025** · [Inference-Time Personalized Alignment with a Few User Preference Queries](https://proceedings.nips.cc/paper_files/paper/2025/hash/7ace822623d2313ec017df71c3a90286-Abstract-Conference.html) — Pădurean et al. · `padurean2025useralign` · Paper
@@ -236,14 +261,22 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="pluralistic-societal-alignment"></a>
 
-#### Pluralistic & Societal Alignment (25)
+#### Pluralistic & Societal Alignment (33)
 
+- **2026** · [Benchmarking Overton Pluralism in LLMs](https://proceedings.iclr.cc/paper_files/paper/2026/hash/4444eb0b68174180d2a46841c951e7f3-Abstract-Conference.html) — Poole-Dayan et al. · `pooledayan2026overtonbench` · Paper
+- **2026** · [Can Persona-Prompted LLMs Emulate Subgroup Values? An Empirical Analysis of Generalisability and Fairness in Cultural Alignment](https://aclanthology.org/2026.acl-long.1127/) — Tan et al. · `tan2026subgroupvalues` · Paper
+- **2026** · [Cultivating Pluralism In Algorithmic Monoculture: The Community Alignment Dataset](https://proceedings.iclr.cc/paper_files/paper/2026/hash/ee208bfc04b1bf6125a6a34baa1c28d3-Abstract-Conference.html) — Zhang et al. · `zhang2026cultivating` · Paper
+- **2026** · [CuMA: Aligning LLMs with Sparse Cultural Values via Demographic-Aware Mixture of Adapters](https://aclanthology.org/2026.acl-long.1265/) — Sun et al. · `sun2026cuma` · Paper
+- **2026** · [Disentangling Consensus and Value-Specific Representations for Controllable Pluralistic Value Alignment of LLMs](https://www.microsoft.com/en-us/research/publication/disentangling-consensus-and-value-specific-representations-for-controllable-pluralistic-value-alignment-of-llms-2/) — Zhou et al. · `zhou2026disalign` · Paper
+- **2026** · [PerSpectra: A Scalable and Configurable Pluralist Benchmark of Perspectives from Arguments](https://proceedings.iclr.cc/paper_files/paper/2026/hash/7be86db6ef1209cf97a418758101fa7c-Abstract-Conference.html) — Nie et al. · `nie2026perspectra` · Paper
+- **2026** · [VALUEFLOW: Toward Pluralistic and Steerable Value-based Alignment in Large Language Models](https://aidaslab.github.io/VALUEFLOW/) — Kim et al. · `kim2026valueflow` · Paper
 - **2026** · [A Game-Theoretic Negotiation Framework for Cross-Cultural Consensus](https://aclanthology.org/2026.acl-long.49/) — Zhang et al. · `zhang2026crosscultural` · Paper
 - **2026** · [ALPHA: Action-Based Learning for Pluralistic Human Alignment in Large Language Models](https://doi.org/10.1609/aaai.v40i44.41056) — Bhattacharyya et al. · `bhattacharyya2026alpha` · DOI
 - **2026** · [DVMap: Fine-Grained Pluralistic Value Alignment via High-Consensus Demographic-Value Mapping](https://aclanthology.org/2026.acl-long.909/) — Zhu et al. · `zhu2026dvmap` · Paper
 - **2026** · [FGD-Align: Pluralistic Alignment for Large Language Models via Fuzzy Group Decision-Making](https://doi.org/10.1609/aaai.v40i21.38819) — Pan et al. · `pan2026fgdalign` · DOI
 - **2026** · [Mind the Gap in Cultural Alignment: Task-Aware Culture Management for Large Language Models](https://aclanthology.org/2026.acl-long.766/) — Zhang et al. · `zhang2026culturemanager` · Paper
 - **2026** · [Operationalizing Pluralistic Values in Large Language Model Alignment Reveals Trade-offs in Safety, Inclusivity, and Model Behavior](https://doi.org/10.1609/aaai.v40i44.41053) — Ali et al. · `ali2026pluralistic` · DOI
+- **2025** · [LLMs' Pluralistic Compatibility](https://proceedings.mlr.press/v294/engelmann25a.html) — Engelmann et al. · `engelmann2025pluralisticcompatibility` · Paper
 - **2025** · [Aligning Trustworthy AI with Democracy: A Dual Taxonomy of Opportunities and Risks](https://arxiv.org/abs/2505.13565) — Mentxaka et al. · `mentxaka2025democracy` · Paper
 - **2025** · [Direct Alignment with Heterogeneous Preferences](https://doi.org/10.52202/085713-2350) — Shirali et al. · `shirali2025heterogeneous` · DOI
 - **2025** · [Exploring Chain-of-Thought Reasoning for Steerable Pluralistic Alignment](https://aclanthology.org/2025.emnlp-main.1301/) — Zhang et al. · `zhang2025pluralisticcot` · Paper
@@ -264,12 +297,20 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2022** · [Fine-Tuning Language Models to Find Agreement among Humans with Diverse Preferences](https://proceedings.neurips.cc/paper/2022/hash/f978c8f3b5f399cae464e85f72e28503-Abstract-Conference.html) — Bakker et al. · `bakker2022finetuning` · Paper
 - **2018** · [The Moral Machine Experiment](https://doi.org/10.1038/s41586-018-0637-6) — Awad et al. · `awad2018moral` · DOI
 
-<a id="uncertainty-drift"></a>
+<a id="context-uncertainty-drift"></a>
 
-#### Uncertainty & Drift (15)
+#### Context, Uncertainty & Drift (23)
 
+- **2026** · [Act-Adaptive Margin: Dynamically Calibrating Reward Models for Subjective Ambiguity](https://doi.org/10.18653/v1/2026.acl-long.710) — Fang et al. · `fang2026aam` · DOI
+- **2026** · [ActiveDPO: Active Direct Preference Optimization for Sample-Efficient Alignment](https://proceedings.iclr.cc/paper_files/paper/2026/hash/24b4531f1ed8d6581530cfde9f47a80b-Abstract-Conference.html) — Lin et al. · `lin2026activedpo` · Paper
+- **2026** · [Conformal Feedback Alignment: Quantifying Answer-Level Reliability for Robust LLM Alignment](https://doi.org/10.18653/v1/2026.findings-eacl.184) — Chen et al. · `chen2026cfa` · DOI
+- **2026** · [When Human Preferences Flip: An Instance-Dependent Robust Loss for RLHF](https://ojs.aaai.org/index.php/AAAI/article/view/41143) — Xu et al. · `xu2026fadpo` · Paper
 - **2026** · [Moral Change or Noise? On Problems of Aligning AI with Temporally Unstable Human Feedback](https://ojs.aaai.org/index.php/AAAI/article/view/41083) — Keswani et al. · `keswani2026moralchange` · Paper
 - **2026** · [Reward Model Routing in Alignment](https://proceedings.iclr.cc/paper_files/paper/2026/hash/8dc9b0192713f44f035b8c0bd3f4153a-Abstract-Conference.html) — Wu et al. · `wu2026rmrouting` · Paper
+- **2025** · [Active Reward Modeling: Adaptive Preference Labeling for Large Language Model Alignment](https://proceedings.mlr.press/v267/shen25c.html) — Shen et al. · `shen2025activerm` · Paper
+- **2025** · [PILAF: Optimal Human Preference Sampling for Reward Modeling](https://proceedings.mlr.press/v267/feng25g.html) — Feng et al. · `feng2025pilaf` · Paper
+- **2025** · [Robust LLM Alignment via Distributionally Robust Direct Preference Optimization](https://papers.neurips.cc/paper_files/paper/2025/hash/272efd3a6091ceefcbc79f1f3a6fdba4-Abstract-Conference.html) — Xu et al. · `xu2025robustdpo` · Paper
+- **2025** · [Uncertainty-Aware Iterative Preference Optimization for Enhanced LLM Reasoning](https://aclanthology.org/2025.acl-long.1169/) — Li et al. · `li2025uipo` · Paper
 - **2025** · [Ask a Strong LLM Judge when Your Reward Model is Uncertain](https://proceedings.neurips.cc/paper_files/paper/2025/hash/6c312cf14321a99ae3788a41593cf2bd-Abstract-Conference.html) — Xu et al. · `xu2025uncertaintyjudge` · Paper
 - **2025** · [COPR: Continual Human Preference Learning via Optimal Policy Regularization](https://aclanthology.org/2025.findings-acl.281/) — Zhang et al. · `zhang2025copr` · Paper
 - **2025** · [Lifelong Safety Alignment for Language Models](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1ca2f4528792b31eab7a3e7f6a1c130b-Abstract-Conference.html) — Wang et al. · `wang2025lifelong` · Paper
@@ -292,11 +333,11 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 | Group | Branch | Papers |
 |---|---|---:|
-| Feedback Source | [Human Feedback](#human-feedback) | 17 |
-| Feedback Source | [AI Feedback](#ai-feedback) | 11 |
-| Feedback Source | [Programmatic & Verifiable Feedback](#programmatic-verifiable-feedback) | 10 |
-| Feedback & Oversight | [Demonstrations & Preferences](#demonstrations-preferences) | 21 |
-| Feedback & Oversight | [Critique & Process Feedback](#critique-process-feedback) | 19 |
+| Feedback Source | [Human Feedback](#human-feedback) | 20 |
+| Feedback Source | [AI Feedback](#ai-feedback) | 23 |
+| Feedback Source | [Programmatic & Verifiable Feedback](#programmatic-verifiable-feedback) | 15 |
+| Feedback & Oversight | [Demonstrations & Preferences](#demonstrations-preferences) | 24 |
+| Feedback & Oversight | [Critique, Process & Trajectory Feedback](#critique-process-trajectory-feedback) | 19 |
 | Feedback & Oversight | [Reliable & Scalable Oversight](#reliable-scalable-oversight) | 25 |
 
 <a id="feedback-source"></a>
@@ -305,18 +346,21 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="human-feedback"></a>
 
-#### Human Feedback (17)
+#### Human Feedback (20)
 
 - **2026** · [WildFeedback: Aligning LLMs With In-situ User Interactions And Feedback](https://aclanthology.org/2026.acl-long.1701/) — Shi et al. · `shi2026wildfeedback` · Paper
 - **2025** · [Aligning Language Models with Demonstrated Feedback](https://proceedings.iclr.cc/paper_files/paper/2025/hash/349a45f211fb1b3850da1ccd829e869e-Abstract-Conference.html) — Shaikh et al. · `shaikh2025ditto` · Paper
 - **2025** · [Binary Classifier Optimization for Large Language Model Alignment](https://aclanthology.org/2025.acl-long.93/) — Jung et al. · `jung2025bco` · Paper
 - **2025** · [Hybrid Preferences: Learning to Route Instances for Human vs. AI Feedback](https://aclanthology.org/2025.acl-long.355/) — Miranda et al. · `miranda2025hybrid` · Paper
 - **2025** · [MM-RLHF: The Next Step Forward in Multimodal LLM Alignment](https://icml.cc/virtual/2025/poster/45124) — Zhang et al. · `zhang2025mmrlhf` · Paper
+- **2024** · [Aligning Large Multimodal Models with Factually Augmented RLHF](https://aclanthology.org/2024.findings-acl.775/) — Sun et al. · `sun2024factrlhf` · Paper
 - **2024** · [Aligning Large Language Models via Fine-grained Supervision](https://aclanthology.org/2024.acl-short.62/) — Xu et al. · `xu2024finegrained` · Paper
 - **2024** · [ChatGLM-RLHF: Practices of Aligning Large Language Models with Human Feedback](https://arxiv.org/abs/2404.00934) — Hou et al. · `hou2024chatglmrlhf` · Paper
 - **2024** · [HelpSteer 2: Open-source Dataset for Training Top-Performing Reward Models](https://doi.org/10.52202/079017-0047) — Wang et al. · `wang2024helpsteer2` · DOI
 - **2024** · [RLHF-V: Towards Trustworthy MLLMs via Behavior Alignment from Fine-Grained Correctional Human Feedback](https://openaccess.thecvf.com/content/CVPR2024/html/Yu_RLHF-V_Towards_Trustworthy_MLLMs_via_Behavior_Alignment_from_Fine-grained_Correctional_CVPR_2024_paper.html) — Yu et al. · `yu2024rlhfv` · Paper
 - **2024** · [Towards Aligning Language Models with Textual Feedback](https://aclanthology.org/2024.emnlp-main.1129/) — Lloret et al. · `lloret2024alt` · Paper
+- **2023** · [HelpSteer: Multi-Attribute Human Preference Dataset for Training and Evaluation of Large Language Models](https://arxiv.org/abs/2311.09528) — Wang et al. · `wang2023helpsteer` · arXiv
+- **2023** · [OpenAssistant Conversations – Democratizing Large Language Model Alignment](https://arxiv.org/abs/2304.07327) — Köpf et al. · `kopf2023openassistant` · arXiv
 - **2023** · [Fine-Grained Human Feedback Gives Better Rewards for Language Model Training](https://proceedings.neurips.cc/paper_files/paper/2023/hash/b8c90b65739ae8417e61eadb521f63d5-Abstract.html) — Wu et al. · `wu2023finegrained` · Paper
 - **2022** · [Improving Alignment of Dialogue Agents via Targeted Human Judgements](https://arxiv.org/abs/2209.14375) — Glaese et al. · `glaese2022sparrow` · Paper
 - **2022** · [Training a Helpful and Harmless Assistant with Reinforcement Learning from Human Feedback](https://arxiv.org/abs/2204.05862) — Bai et al. · `bai2022hh` · Paper
@@ -327,34 +371,51 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="ai-feedback"></a>
 
-#### AI Feedback (11)
+#### AI Feedback (23)
 
 - **2026** · [Aligning Large Language Models via Fully Self-Synthetic Data](https://aclanthology.org/2026.acl-long.1595/) — Yin et al. · `yin2026sao` · Paper
 - **2026** · [Check Your Work: Structured Checklist Feedback for Improving Large Language Models](https://aclanthology.org/2026.acl-long.759/) — Cook et al. · `cook2026checklist` · Paper
+- **2025** · [Magpie: Alignment Data Synthesis from Scratch by Prompting Aligned LLMs with Nothing](https://proceedings.iclr.cc/paper_files/paper/2025/hash/be06e3802e9411381feece79b4d960c1-Abstract-Conference.html) — Xu et al. · `xu2025magpie` · Paper
 - **2025** · [Diverse AI Feedback For Large Language Model Alignment](https://aclanthology.org/2025.tacl-1.19/) — Yu et al. · `yu2025daif` · Paper
 - **2025** · [Learning LLM-as-a-Judge for Preference Alignment](https://proceedings.iclr.cc/paper_files/paper/2025/hash/09fd990b19b2e69cc4d20e9969e43f09-Abstract-Conference.html) — Ye et al. · `ye2025conj` · Paper
 - **2025** · [LLaVA-Critic: Learning to Evaluate Multimodal Models](https://doi.org/10.1109/CVPR52734.2025.01271) — Xiong et al. · `xiong2025llavacritic` · DOI
+- **2024** · [LLM Critics Help Catch LLM Bugs](https://arxiv.org/abs/2407.00215) — McAleese et al. · `mcaleese2024critics` · Paper
 - **2024** · [Direct Large Language Model Alignment Through Self-Rewarding Contrastive Prompt Distillation](https://aclanthology.org/2024.acl-long.523/) — Liu et al. · `liu2024dlma` · Paper
 - **2024** · [RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://proceedings.mlr.press/v235/lee24t.html) — Lee et al. · `lee2024rlaif` · Paper
 - **2024** · [Self-Rewarding Language Models](https://scholar.google.com/scholar?q=Self-Rewarding+Language+Models) — Yuan et al. · `yuan2024selfrewarding` · Scholar
 - **2024** · [UltraFeedback: Boosting Language Models with Scaled AI Feedback](https://proceedings.mlr.press/v235/cui24f.html) — Cui et al. · `cui2024ultrafeedback` · Paper
 - **2024** · [VLFeedback: A Large-Scale AI Feedback Dataset for Large Vision-Language Models Alignment](https://aclanthology.org/2024.emnlp-main.358/) — Li et al. · `li2024vlfeedback` · Paper
+- **2023** · [Enhancing Chat Language Models by Scaling High-quality Instruction Conversations](https://arxiv.org/abs/2305.14233) — Ding et al. · `ding2023ultrachat` · arXiv
+- **2023** · [G-Eval: NLG Evaluation using GPT-4 with Better Human Alignment](https://arxiv.org/abs/2303.16634) — Liu et al. · `liu2023geval` · arXiv
+- **2023** · [JudgeLM: Fine-tuned Large Language Models Are Scalable Judges](https://arxiv.org/abs/2310.17631) — Zhu et al. · `zhu2023judgelm` · arXiv
+- **2023** · [Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://proceedings.neurips.cc/paper_files/paper/2023/hash/91f18a1287b398d378ef22505bf41832-Abstract-Datasets_and_Benchmarks.html) — Zheng et al. · `zheng2023mtbench` · Paper
+- **2023** · [Orca: Progressive Learning from Complex Explanation Traces of GPT-4](https://arxiv.org/abs/2306.02707) — Mukherjee et al. · `mukherjee2023orca` · arXiv
+- **2023** · [Reflexion: Language Agents with Verbal Reinforcement Learning](https://scholar.google.com/scholar?q=Reflexion%3A+Language+Agents+with+Verbal+Reinforcement+Learning) — Shinn et al. · `shinn2023reflexion` · Scholar
+- **2023** · [Self-Alignment: Building an Open-source and Self-Instructive Language Model](https://scholar.google.com/scholar?q=Self-Alignment%3A+Building+an+Open-source+and+Self-Instructive+Language+Model) — Sun et al. · `sun2023selfalignment` · Scholar
+- **2023** · [Self-Instruct: Aligning Language Models with Self-Generated Instructions](https://aclanthology.org/2023.acl-long.754/) — Wang et al. · `wang2023selfinstruct` · Paper
+- **2023** · [Self-Refine: Iterative Refinement with Self-Feedback](https://arxiv.org/abs/2303.17651) — Madaan et al. · `madaan2023selfrefine` · Paper
+- **2023** · [WizardLM: Empowering Large Language Models with Evol-Instruct](https://arxiv.org/abs/2304.12244) — Xu et al. · `xu2023wizardlm` · arXiv
 - **2022** · [Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073) — Bai et al. · `bai2022constitutional` · Paper
 
 <a id="programmatic-verifiable-feedback"></a>
 
-#### Programmatic & Verifiable Feedback (10)
+#### Programmatic & Verifiable Feedback (15)
 
 - **2026** · [Crossing the Reward Bridge: Expanding Reinforcement Learning with Verifiable Rewards Across Diverse Domains](https://aclanthology.org/2026.acl-long.178/) — Su et al. · `su2026rewardbridge` · Paper
 - **2026** · [Knowledge-to-Verification: Exploring RLVR for LLMs in Knowledge-Intensive Domains](https://aclanthology.org/2026.acl-long.1891/) — Yuan et al. · `yuan2026k2v` · Paper
+- **2025** · [OpenPRM: Building Open-domain Process-based Reward Models with Preference Trees](https://openreview.net/forum?id=fGIqGfmgkW) — Zhang et al. · `zhang2025openprm` · Paper
 - **2025** · [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948) — DeepSeek-AI · `deepseek2025r1` · Paper
 - **2025** · [Generative Verifiers: Reward Modeling as Next-Token Prediction](https://proceedings.iclr.cc/paper_files/paper/2025/hash/214308a2d5e3f83ef9ad2739e1cbc46d-Abstract-Conference.html) — Zhang et al. · `zhang2025genrm` · Paper
 - **2025** · [Rewarding Progress: Scaling Automated Process Verifiers for LLM Reasoning](https://proceedings.iclr.cc/paper_files/paper/2025/hash/98711dea460bdefe0e651ca23ec98ba2-Abstract-Conference.html) — Setlur et al. · `setlur2025rewarding` · Paper
 - **2025** · [RLEF: Grounding Code LLMs in Execution Feedback with Reinforcement Learning](https://proceedings.mlr.press/v267/gehring25a.html) — Gehring et al. · `gehring2025rlef` · Paper
+- **2024** · [Let's Verify Step by Step](https://proceedings.iclr.cc/paper_files/paper/2024/hash/aca97732e30bcf1303bc22ac3924fd16-Abstract-Conference.html) — Lightman et al. · `lightman2024verify` · Paper
 - **2024** · [DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models](https://arxiv.org/abs/2402.03300) — Shao et al. · `shao2024deepseekmath` · Paper
 - **2024** · [Math-Shepherd: Verify and Reinforce LLMs Step-by-Step without Human Annotations](https://aclanthology.org/2024.acl-long.510/) — Wang et al. · `wang2024mathshepherd` · Paper
 - **2024** · [Rule Based Rewards for Language Model Safety](https://scholar.google.com/scholar?q=Rule+Based+Rewards+for+Language+Model+Safety) — Mu et al. · `mu2024rulebased` · Scholar
 - **2024** · [V-STaR: Training Verifiers for Self-Taught Reasoners](https://openreview.net/forum?id=stmqBSW2dV) — Hosseini et al. · `hosseini2024vstar` · Paper
+- **2022** · [CodeRL: Mastering Code Generation through Pretrained Models and Deep Reinforcement Learning](https://proceedings.neurips.cc/paper_files/paper/2022/hash/8636419dea1aa9fbd25fc4248e702da4-Abstract-Conference.html) — Le et al. · `li2022coderl` · Paper
+- **2021** · [Evaluating Large Language Models Trained on Code](https://arxiv.org/abs/2107.03374) — Chen et al. · `chen2021humaneval` · arXiv
+- **2021** · [Measuring Coding Challenge Competence With APPS](https://arxiv.org/abs/2105.09938) — Hendrycks et al. · `hendrycks2021apps` · arXiv
 
 <a id="feedback-oversight"></a>
 
@@ -362,14 +423,17 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="demonstrations-preferences"></a>
 
-#### Demonstrations & Preferences (21)
+#### Demonstrations & Preferences (24)
 
 - **2026** · [WildFeedback: Aligning LLMs With In-situ User Interactions And Feedback](https://aclanthology.org/2026.acl-long.1701/) — Shi et al. · `shi2026wildfeedback` · Paper
+- **2025** · [Hybrid Preferences: Learning to Route Instances for Human vs. AI Feedback](https://aclanthology.org/2025.acl-long.355/) — Miranda et al. · `miranda2025hybrid` · Paper
 - **2025** · [Aligning Language Models with Demonstrated Feedback](https://proceedings.iclr.cc/paper_files/paper/2025/hash/349a45f211fb1b3850da1ccd829e869e-Abstract-Conference.html) — Shaikh et al. · `shaikh2025ditto` · Paper
 - **2025** · [Aligning Large Language Models with Implicit Preferences from User-Generated Content](https://aclanthology.org/2025.acl-long.384/) — Tan et al. · `tan2025pugc` · Paper
 - **2025** · [Binary Classifier Optimization for Large Language Model Alignment](https://aclanthology.org/2025.acl-long.93/) — Jung et al. · `jung2025bco` · Paper
 - **2025** · [Finding the Sweet Spot: Preference Data Construction for Scaling Preference Optimization](https://aclanthology.org/2025.acl-long.615/) — Xiao et al. · `xiao2025sweetspot` · Paper
 - **2025** · [Joint Reward and Policy Learning with Demonstrations and Human Feedback Improves Alignment](https://proceedings.iclr.cc/paper_files/paper/2025/hash/0ad6ebd11593822b8a6d5873ca9c5b0b-Abstract-Conference.html) — Li et al. · `li2025joint` · Paper
+- **2024** · [Aligning Large Language Models via Fine-grained Supervision](https://aclanthology.org/2024.acl-short.62/) — Xu et al. · `xu2024finegrained` · Paper
+- **2024** · [Scaling Instruction-Finetuned Language Models](https://www.jmlr.org/papers/v25/23-0870.html) — Chung et al. · `chung2024flan` · Paper
 - **2024** · [Active Preference Learning for Large Language Models](https://scholar.google.com/scholar?q=Active+Preference+Learning+for+Large+Language+Models) — Muldrew et al. · `muldrew2024active` · Scholar
 - **2024** · [Getting More Juice Out of the SFT Data: Reward Learning from Human Demonstration Improves SFT for LLM Alignment](https://papers.nips.cc/paper_files/paper/2024/hash/e0c9b65fb3e41aaa86576df3ec33ad2e-Abstract-Conference.html) — Li et al. · `li2024demoreward` · Paper
 - **2024** · [HelpSteer 2: Open-source Dataset for Training Top-Performing Reward Models](https://doi.org/10.52202/079017-0047) — Wang et al. · `wang2024helpsteer2` · DOI
@@ -386,15 +450,15 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2020** · [Learning to Summarize with Human Feedback](https://proceedings.neurips.cc/paper/2020/hash/1f89885d556929e98d3ef9b86448f951-Abstract.html) — Stiennon et al. · `stiennon2020summarize` · Paper
 - **2017** · [Deep Reinforcement Learning from Human Preferences](https://proceedings.neurips.cc/paper/2017/hash/d5e2c0adad503c91f91df240d0cd4e49-Abstract.html) — Christiano et al. · `christiano2017preferences` · Paper
 
-<a id="critique-process-feedback"></a>
+<a id="critique-process-trajectory-feedback"></a>
 
-#### Critique & Process Feedback (19)
+#### Critique, Process & Trajectory Feedback (19)
 
 - **2026** · [Critique-RL: Training Language Models for Critiquing Through Two-Stage Reinforcement Learning](https://proceedings.iclr.cc/paper_files/paper/2026/hash/d0e08f7a2d1b2d5c2da159395e8d61aa-Abstract-Conference.html) — Xi et al. · `xi2026critiquerl` · Paper
 - **2026** · [Exploring Reasoning Reward Model for Agents](https://aclanthology.org/2026.findings-acl.95/) — Fan et al. · `fan2026agentrrm` · Paper
 - **2026** · [The Bidirectional Process Reward Model](https://aclanthology.org/2026.acl-long.572/) — Zhang et al. · `zhang2026biprm` · Paper
 - **2025** · [Dynamic and Generalizable Process Reward Modeling](https://aclanthology.org/2025.acl-long.212/) — Yin et al. · `yin2025dgprm` · Paper
-- **2025** · [OpenPRM: Building Open-domain Process-based Reward Models with Preference Trees](https://scholar.google.com/scholar?q=OpenPRM%3A+Building+Open-domain+Process-based+Reward+Models+with+Preference+Trees) — Zhang et al. · `zhang2025openprm` · Scholar
+- **2025** · [OpenPRM: Building Open-domain Process-based Reward Models with Preference Trees](https://openreview.net/forum?id=fGIqGfmgkW) — Zhang et al. · `zhang2025openprm` · Paper
 - **2025** · [Rewarding Progress: Scaling Automated Process Verifiers for LLM Reasoning](https://proceedings.iclr.cc/paper_files/paper/2025/hash/98711dea460bdefe0e651ca23ec98ba2-Abstract-Conference.html) — Setlur et al. · `setlur2025rewarding` · Paper
 - **2025** · [Self-Generated Critiques Boost Reward Modeling for Language Models](https://aclanthology.org/2025.naacl-long.573/) — Yu et al. · `yu2025criticrm` · Paper
 - **2025** · [Teaching Language Models to Critique via Reinforcement Learning](https://proceedings.mlr.press/v267/xie25a.html) — Xie et al. · `xie2025ctrl` · Paper
@@ -453,8 +517,8 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 | Training-Time Alignment | [Preference Optimization](#preference-optimization) | 39 |
 | Training-Time Alignment | [Reinforcement Learning](#reinforcement-learning) | 22 |
 | Training-Time Alignment | [Alignment Distillation](#alignment-distillation) | 8 |
-| Inference-Time Alignment | [Steering, Search & Refinement](#steering-search-refinement) | 19 |
-| Inference-Time Alignment | [Human Control](#human-control) | 14 |
+| Inference-Time Alignment | [Steering, Search & Refinement](#steering-search-refinement) | 30 |
+| Inference-Time Alignment | [Interactive & Agentic Control](#interactive-agentic-control) | 17 |
 
 <a id="training-time-alignment"></a>
 
@@ -605,17 +669,28 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="steering-search-refinement"></a>
 
-#### Steering, Search & Refinement (19)
+#### Steering, Search & Refinement (30)
 
+- **2026** · [A Training-Free Regeneration Paradigm: Contrastive Reflection Memory Guided Self-Verification and Self-Improvement](https://arxiv.org/abs/2603.20441) — Li et al. · `li2026trainingfree` · arXiv
+- **2026** · [Beyond Linear Activation Steering: Invertible Latent Transformations for Controlling LLM Behavior](https://arxiv.org/abs/2606.08454) — Nguyen et al. · `nguyen2026beyondlinear` · arXiv
+- **2026** · [CyberCorrect: A Cybernetic Framework for Closed-Loop Self-Correction in Large Language Models](https://arxiv.org/abs/2605.17305) — Wu et al. · `wu2026cybercorrect` · arXiv
+- **2026** · [Don't Lose Focus: Activation Steering via Key-Orthogonal Projections](https://arxiv.org/abs/2605.06342) — Luo et al. · `luo2026dontlosefocus` · arXiv
+- **2026** · [ODESteer: A Unified ODE-Based Steering Framework for LLM Alignment](https://arxiv.org/abs/2602.17560) — Zhao et al. · `zhao2026odesteer` · arXiv
+- **2026** · [Spherical Steering: Geometry-Aware Activation Rotation for Language Models](https://arxiv.org/abs/2602.08169) — You et al. · `you2026spherical` · arXiv
 - **2026** · [Activation Steering with a Feedback Controller](https://proceedings.iclr.cc/paper_files/paper/2026/hash/fa5617c176e76fee83f3f9947fdf9f3f-Abstract-Conference.html) — Nguyen et al. · `nguyen2026pidsteering` · Paper
 - **2026** · [FineSteer: A Unified Framework for Fine-Grained Inference-Time Steering in Large Language Models](https://aclanthology.org/2026.acl-long.852/) — Weng et al. · `weng2026finesteer` · Paper
 - **2026** · [One Refiner to Unlock Them All: Inference-Time Reasoning Elicitation via Reinforcement Query Refinement](https://aclanthology.org/2026.acl-long.1807/) — Zhou et al. · `zhou2026requer` · Paper
+- **2025** · [Scaling LLM Test-Time Compute Optimally Can be More Effective than Scaling Parameters for Reasoning](https://openreview.net/forum?id=4FWAwZtd2n) — Snell et al. · `snell2025scaling` · Paper
+- **2025** · [SSR: Socratic Self-Refine for Large Language Model Reasoning](https://arxiv.org/abs/2511.10621) — Shi et al. · `shi2025ssr` · arXiv
+- **2025** · [Unleashing the True Potential of LLMs: A Feedback-Triggered Self-Correction with Long-Term Multipath Decoding](https://arxiv.org/abs/2509.07676) — Li et al. · `li2025unleashing` · arXiv
+- **2025** · [W2S-AlignTree: Weak-to-Strong Inference-Time Alignment for Large Language Models via Monte Carlo Tree Search](https://arxiv.org/abs/2511.11518) — Ding et al. · `ding2025w2s` · arXiv
 - **2025** · [ARCANE: A Multi-Agent Framework for Interpretable and Configurable Alignment](https://arxiv.org/abs/2512.06196) — Masters et al. · `masters2025arcane` · Paper
 - **2025** · [Improving Instruction-Following in Language Models through Activation Steering](https://proceedings.iclr.cc/paper_files/paper/2025/hash/8c3262a4c965ba9888f120d4f9e13478-Abstract-Conference.html) — Stolfo et al. · `stolfo2025steering` · Paper
 - **2025** · [LLaVA-Critic: Learning to Evaluate Multimodal Models](https://doi.org/10.1109/CVPR52734.2025.01271) — Xiong et al. · `xiong2025llavacritic` · DOI
 - **2025** · [Nudging: Inference-time Alignment of LLMs via Guided Decoding](https://aclanthology.org/2025.acl-long.623/) — Fei et al. · `fei2025nudging` · Paper
 - **2025** · [Reward-Guided Tree Search for Inference Time Alignment of Large Language Models](https://aclanthology.org/2025.naacl-long.625/) — Hung et al. · `hung2025darwin` · Paper
 - **2025** · [S^2R: Teaching LLMs to Self-verify and Self-correct via Reinforcement Learning](https://aclanthology.org/2025.acl-long.1104/) — Ma et al. · `ma2025s2r` · Paper
+- **2024** · [Controlled Decoding from Language Models](https://proceedings.mlr.press/v235/mudgal24a.html) — Mudgal et al. · `mudgal2023controlled` · Paper
 - **2024** · [ARGS: Alignment as Reward-Guided Search](https://proceedings.iclr.cc/paper_files/paper/2024/hash/4d1344317478ad99ff5f4e414aeab689-Abstract-Conference.html) — Khanov et al. · `khanov2024args` · Paper
 - **2024** · [CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing](https://scholar.google.com/scholar?q=CRITIC%3A+Large+Language+Models+Can+Self-Correct+with+Tool-Interactive+Critiquing) — Gou et al. · `gou2024critic` · Scholar
 - **2024** · [Math-Shepherd: Verify and Reinforce LLMs Step-by-Step without Human Annotations](https://aclanthology.org/2024.acl-long.510/) — Wang et al. · `wang2024mathshepherd` · Paper
@@ -627,12 +702,15 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2023** · [Self-Refine: Iterative Refinement with Self-Feedback](https://arxiv.org/abs/2303.17651) — Madaan et al. · `madaan2023selfrefine` · Paper
 - **2021** · [WebGPT: Browser-Assisted Question-Answering with Human Feedback](https://arxiv.org/abs/2112.09332) — Nakano et al. · `nakano2021webgpt` · Paper
 
-<a id="human-control"></a>
+<a id="interactive-agentic-control"></a>
 
-#### Human Control (14)
+#### Interactive & Agentic Control (17)
 
+- **2026** · [Steering LLMs via Scalable Interactive Oversight](https://arxiv.org/abs/2602.04210) — Zhou et al. · `zhou2026steering` · arXiv
 - **2026** · [Designing Meaningful Human Oversight in AI](https://doi.org/10.1007/s43681-026-01147-7) — Zhu et al. · `zhu2026oversight` · Paper
 - **2026** · [Structured Uncertainty guided Clarification for LLM Agents](https://aclanthology.org/2026.findings-acl.2028/) — Suri et al. · `suri2026clarification` · Paper
+- **2025** · [Scalable Human Oversight for Aligned Large Language Models: A Hybrid Framework for Intent Fidelity](https://doi.org/10.18280/isi.300807) — Ayankoya et al. · `ayankoya2025scalable` · DOI
+- **2025** · [The Burden of Interactive Alignment with Inconsistent Preferences](https://arxiv.org/abs/2510.16368) — Shirali, Ali · `shirali2025burden` · arXiv
 - **2025** · [Corrigibility Transformation: Constructing Goals That Accept Updates](https://arxiv.org/abs/2510.15395) — Hudson · `hudson2025corrigibility` · Paper
 - **2025** · [Enabling Self-Improving Agents to Learn at Test Time With Human-In-The-Loop Guidance](https://aclanthology.org/2025.emnlp-industry.115/) — He et al. · `he2025aria` · Paper
 - **2025** · [Policy Optimization under Imperfect Human Interactions with Agent-Gated Shared Autonomy](https://proceedings.iclr.cc/paper_files/paper/2025/hash/d4ecde5d18d36150c529d1b9c5f0d727-Abstract-Conference.html) — Xue et al. · `xue2025agsa` · Paper
@@ -655,10 +733,10 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 | Group | Branch | Papers |
 |---|---|---:|
 | Evaluation & Robustness | [Behavioral & Evaluator Evaluation](#behavioral-evaluator-evaluation) | 26 |
-| Evaluation & Robustness | [Adversarial & Distribution Robustness](#adversarial-distribution-robustness) | 28 |
-| Evaluation & Robustness | [Alignment Preservation](#alignment-preservation) | 16 |
-| System Assurance | [Mechanistic & Theoretical Evidence](#mechanistic-theoretical-evidence) | 26 |
-| System Assurance | [Monitoring & Auditing](#monitoring-auditing) | 20 |
+| Evaluation & Robustness | [Adversarial & Distribution Robustness](#adversarial-distribution-robustness) | 30 |
+| Evaluation & Robustness | [Alignment Preservation](#alignment-preservation) | 17 |
+| System Assurance | [Mechanistic & Theoretical Evidence](#mechanistic-theoretical-evidence) | 31 |
+| System Assurance | [Monitoring & Auditing](#monitoring-auditing) | 29 |
 
 <a id="evaluation-robustness"></a>
 
@@ -697,8 +775,9 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="adversarial-distribution-robustness"></a>
 
-#### Adversarial & Distribution Robustness (28)
+#### Adversarial & Distribution Robustness (30)
 
+- **2026** · [Safety Is Not Universal: The Selective Safety Trap in LLM Alignment](https://doi.org/10.18653/v1/2026.findings-acl.489) — Brito et al. · `brito2026safetyisnotuniversal` · DOI
 - **2026** · [Alignment Tampering: How Reinforcement Learning from Human Feedback Is Exploited to Optimize Misaligned Biases](https://arxiv.org/abs/2605.27355) — Hahm et al. · `hahm2026alignmenttampering` · Paper
 - **2026** · [ERTS: Adversarial Robustness Testing of Ethical AI via Semantic Perturbation in a Bounded Consequence Space](https://arxiv.org/abs/2606.13282) — Chaudhari · `chaudhari2026erts` · Paper
 - **2026** · [Into the Gray Zone: Domain Contexts Can Blur LLM Safety Boundaries](https://aclanthology.org/2026.acl-long.1139/) — Hung et al. · `hung2026grayzone` · Paper
@@ -711,6 +790,7 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2025** · [Jailbreak Antidote: Runtime Safety-Utility Balance via Sparse Representation Adjustment in Large Language Models](https://proceedings.iclr.cc/paper_files/paper/2025/hash/36e3f9e6162d597adada4e0e4fce6861-Abstract-Conference.html) — Shen et al. · `shen2025antidote` · Paper
 - **2025** · [Jailbreaking Leading Safety-Aligned LLMs with Simple Adaptive Attacks](https://proceedings.iclr.cc/paper_files/paper/2025/hash/63fa7efdd3bcf944a4bd6e0ff6a50041-Abstract-Conference.html) — Andriushchenko et al. · `andriushchenko2025adaptive` · Paper
 - **2025** · [Lifelong Safety Alignment for Language Models](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1ca2f4528792b31eab7a3e7f6a1c130b-Abstract-Conference.html) — Wang et al. · `wang2025lifelong` · Paper
+- **2024** · [CodeAttack: Revealing Safety Generalization Challenges of Large Language Models via Code Completion](https://doi.org/10.18653/v1/2024.findings-acl.679) — Ren et al. · `ren2024codeattack` · DOI
 - **2024** · [A StrongREJECT for Empty Jailbreaks](https://arxiv.org/abs/2402.10260) — Souly et al. · `souly2024strongreject` · Paper
 - **2024** · [Alignment Faking in Large Language Models](https://arxiv.org/abs/2412.14093) — Greenblatt et al. · `greenblatt2024alignmentfaking` · Paper
 - **2024** · [BackdoorAlign: Mitigating Fine-tuning based Jailbreak Attack with Backdoor Enhanced Safety Alignment](https://proceedings.neurips.cc/paper_files/paper/2024/hash/094324f386c836c75d4a26f3499d2ede-Abstract-Conference.html) — Wang et al. · `wang2024backdooralign` · Paper
@@ -730,8 +810,9 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="alignment-preservation"></a>
 
-#### Alignment Preservation (16)
+#### Alignment Preservation (17)
 
+- **2026** · [Safety at One Shot: Patching Fine-Tuned LLMs with A Single Instance](https://proceedings.iclr.cc/paper_files/paper/2026/hash/3d7cb780442f0d17c844dbe34997fab7-Abstract-Conference.html) — Zhang et al. · `zhang2026safetyoneshot` · Paper
 - **2026** · [Alignment Midtraining for Animals](https://arxiv.org/abs/2604.13076) — Brazilek et al. · `brazilek2026alignment` · Paper
 - **2026** · [Continual Safety Alignment via Gradient-Based Sample Selection](https://aclanthology.org/2026.findings-acl.942/) — Bach et al. · `bach2026continual` · Paper
 - **2026** · [Safeguarding LLM Fine-tuning via Push-Pull Distributional Alignment](https://aclanthology.org/2026.acl-long.1083/) — Wang et al. · `wang2026sot` · Paper
@@ -755,14 +836,17 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="mechanistic-theoretical-evidence"></a>
 
-#### Mechanistic & Theoretical Evidence (26)
+#### Mechanistic & Theoretical Evidence (31)
 
+- **2026** · [Mechanistic Interpretability for Large Language Model Alignment: Progress, Challenges, and Future Directions](https://arxiv.org/abs/2602.11180) — Naseem · `naseem2026mechanistic` · arXiv
 - **2026** · [Intrinsic Barriers and Practical Pathways for Human–AI Alignment: An Agreement-Based Complexity Analysis](https://ojs.aaai.org/index.php/AAAI/article/view/41113) — Nayebi · `nayebi2026barriers` · Paper
 - **2026** · [Revealing the Intrinsic Ethical Vulnerability of Aligned Large Language Models](https://doi.org/10.1038/s41467-026-70917-y) — Lian et al. · `lian2026ethicalvulnerability` · DOI
 - **2026** · [Self-Jailbreaking: Language Models Can Reason Themselves Out of Safety Alignment After Benign Reasoning Training](https://proceedings.iclr.cc/paper_files/paper/2026/hash/9b14a88c6e50068a97256696902521bf-Abstract-Conference.html) — Yong et al. · `yong2026selfjailbreaking` · Paper
 - **2026** · [Statistical Impossibility and Possibility of Aligning LLMs with Human Preferences: From Condorcet Paradox to Nash Equilibrium](https://doi.org/10.1214/26-AOS2643) — Liu et al. · `liu2026statisticalalignment` · DOI
 - **2026** · [Sustaining AI Safety: Control-Theoretic External Impossibility, Intrinsic Necessity, and Structural Requirements](https://arxiv.org/abs/2605.12963) — Mazzu · `mazzu2026sustaining` · Paper
 - **2026** · [The Alignment Game: A Theory of Long-Horizon Alignment Through Recursive Curation](https://ojs.aaai.org/index.php/AAAI/article/view/41070) — Falahati et al. · `falahati2026alignmentgame` · Paper
+- **2025** · [Open Problems in Mechanistic Interpretability](https://arxiv.org/abs/2501.16496) — Sharkey et al. · `sharkey2025openproblems` · arXiv
+- **2025** · [The Alignment Trap: Complexity Barriers](https://arxiv.org/abs/2506.10304) — Yao · `yao2025alignmenttrap` · arXiv
 - **2025** · [Corrigibility Transformation: Constructing Goals That Accept Updates](https://arxiv.org/abs/2510.15395) — Hudson · `hudson2025corrigibility` · Paper
 - **2025** · [Distortion of AI Alignment: Does Preference Optimization Optimize for Preferences?](https://proceedings.nips.cc/paper_files/paper/2025/hash/2526c5e8110bc6bc8b462ba95198161e-Abstract-Conference.html) — Gölz et al. · `golz2025distortion` · Paper
 - **2025** · [Reasoning Models Don't Always Say What They Think](https://arxiv.org/abs/2505.05410) — Chen et al. · `chen2025cotfaithfulness` · Paper
@@ -772,6 +856,8 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2025** · [Understanding and Enhancing Safety Mechanisms of LLMs via Safety-Specific Neuron](https://openreview.net/forum?id=yR47RmND1m) — Zhao et al. · `zhao2025safetyspecific` · Paper
 - **2025** · [Why Do Some Language Models Fake Alignment While Others Don't?](https://doi.org/10.52202/085713-1771) — Sheshadri et al. · `sheshadri2025alignmentfaking` · DOI
 - **2025** · [Why Safeguarded Ships Run Aground? Aligned Large Language Models' Safety Mechanisms Tend to Be Anchored in The Template Region](https://aclanthology.org/2025.acl-long.738/) — Leong et al. · `leong2025template` · Paper
+- **2024** · [Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2](https://arxiv.org/abs/2408.05147) — Lieberum et al. · `lieberum2024gemmascope` · arXiv
+- **2024** · [Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet](https://transformer-circuits.pub/2024/scaling-monosemanticity/index.html) — Templeton et al. · `templeton2024scaling` · Paper
 - **2024** · [Fundamental Limitations of Alignment in Large Language Models](https://proceedings.mlr.press/v235/wolf24a.html) — Wolf et al. · `wolf2024limitations` · Paper
 - **2024** · [Refusal in Language Models Is Mediated by a Single Direction](https://proceedings.neurips.cc/paper_files/paper/2024/hash/f545448535dfde4f9786555403ab7c49-Abstract-Conference.html) — Arditi et al. · `arditi2024refusal` · Paper
 - **2024** · [Scaling Laws for Reward Model Overoptimization in Direct Alignment Algorithms](https://proceedings.neurips.cc/paper_files/paper/2024/hash/e45caa3d5273d105b8d045e748636957-Abstract-Conference.html) — Rafailov et al. · `rafailov2024overoptimization` · Paper
@@ -786,12 +872,19 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="monitoring-auditing"></a>
 
-#### Monitoring & Auditing (20)
+#### Monitoring & Auditing (29)
 
+- **2026** · [Benchmarking and Improving Monitors for Out-Of-Distribution Alignment Failure in LLMs](https://arxiv.org/abs/2605.21602) — Feng et al. · `feng2026benchmarking` · arXiv
+- **2026** · [Coding with "Enemy": Can Human Developers Detect AI Agent Sabotage?](https://arxiv.org/abs/2606.05647) — Ye et al. · `ye2026codingenemy` · arXiv
+- **2026** · [Formal Methods Meet LLMs: Auditing, Monitoring, and Intervention for Compliance of Advanced AI Systems](https://doi.org/10.1145/3805689.3812339) — Alamdari et al. · `alamdari2026formal` · DOI
+- **2026** · [Sycophancy Towards Researchers Drives Performative Misalignment](https://arxiv.org/abs/2606.08629) — Baek et al. · `baek2026sycophancy` · arXiv
+- **2026** · [When Saying ``No'' Is Not Enough: Cognitive-Action Decoupling and the Illusion of Safety in LLM Agents](https://doi.org/10.1145/3805689.3812378) — Yu et al. · `yu2026whensayingno` · DOI
 - **2026** · [AgenticEval: Toward Agentic and Self-Evolving Safety Evaluation of Large Language Models](https://aclanthology.org/2026.findings-acl.727/) — Wang et al. · `wang2026agenticeval` · Paper
 - **2026** · [EvalSafetyGap: A Hybrid Survey and Conceptual Framework for LLM Evaluation-Safety Failures](https://arxiv.org/abs/2606.30219) — Uluirmak et al. · `uluirmak2026evalsafetygap` · Paper
 - **2026** · [Strategic Dishonesty Can Undermine AI Safety Evaluations of Frontier LLMs](https://proceedings.iclr.cc/paper_files/paper/2026/hash/51510f7458011efb04791417c67798f1-Abstract-Conference.html) — Panfilov et al. · `panfilov2026dishonesty` · Paper
 - **2026** · [Watch the Weights: Unsupervised Monitoring and Control of Fine-Tuned LLMs](https://proceedings.iclr.cc/paper_files/paper/2026/hash/79ee64e62fd3ee763961ce3d6aed4971-Abstract-Conference.html) — Zhong et al. · `zhong2026weights` · Paper
+- **2025** · [Adaptive Deployment of Untrusted LLMs Reduces Distributed Threats](https://openreview.net/forum?id=699c5a2bb87a8aa32c4ad541d9997361) — Wen et al. · `wen2025adaptivedeployment` · Paper
+- **2025** · [CALM: Curiosity-Driven Auditing for Large Language Models](https://doi.org/10.1609/aaai.v39i26.34991) — Zheng et al. · `zheng2025calm` · DOI
 - **2025** · [An Auditing Test to Detect Behavioral Shift in Language Models](https://proceedings.iclr.cc/paper_files/paper/2025/hash/7af140f516c9f57050f7359bf53bc8f0-Abstract-Conference.html) — Richter et al. · `richter2025auditing` · Paper
 - **2025** · [Auditing Language Models for Hidden Objectives](https://arxiv.org/abs/2503.10965) — Marks et al. · `marks2025auditing` · Paper
 - **2025** · [CoT Red-Handed: Stress Testing Chain-of-Thought Monitoring](https://doi.org/10.52202/085713-1654) — Arnav et al. · `arnav2025cot` · DOI
@@ -799,6 +892,8 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 - **2025** · [From Judgment to Interference: Early Stopping LLM Harmful Outputs via Streaming Content Monitoring](https://doi.org/10.52202/085713-1814) — Li et al. · `li2025streaming` · DOI
 - **2025** · [RewardBench: Evaluating Reward Models for Language Modeling](https://aclanthology.org/2025.findings-naacl.96/) — Lambert et al. · `lambert2025rewardbench` · Paper
 - **2025** · [Why Do Some Language Models Fake Alignment While Others Don't?](https://doi.org/10.52202/085713-1771) — Sheshadri et al. · `sheshadri2025alignmentfaking` · DOI
+- **2025** · [SafetyAnalyst: Interpretable, Transparent, and Steerable Safety Moderation for AI Behavior](https://proceedings.mlr.press/v267/li25bw.html) — Li et al. · `li2025safetyanalyst` · Paper
+- **2024** · [AuditLLM: A Tool for Auditing Large Language Models Using Multiprobe Approach](https://doi.org/10.1145/3627673.3679222) — Amirizaniani et al. · `amirizaniani2024auditllm` · DOI
 - **2024** · [AI Control: Improving Safety Despite Intentional Subversion](https://proceedings.mlr.press/v235/greenblatt24a.html) — Greenblatt et al. · `greenblatt2024control` · Paper
 - **2024** · [Alignment Faking in Large Language Models](https://arxiv.org/abs/2412.14093) — Greenblatt et al. · `greenblatt2024alignmentfaking` · Paper
 - **2024** · [Black-Box Access is Insufficient for Rigorous AI Audits](https://doi.org/10.1145/3630106.3659037) — Casper et al. · `casper2024blackbox` · DOI
@@ -851,4 +946,4 @@ This is a curated and evolving research map rather than a claim of exhaustive co
 
 ---
 
-Last synchronized with the taxonomy and bibliography on **2026-09-10**. 26 BibTeX records currently use a Scholar search because they do not contain a direct URL, DOI, or arXiv identifier.
+Last synchronized with the taxonomy and bibliography on **2026-09-24**. Citation aliases are normalized in the collection so that the same work is not counted twice under different BibTeX keys.
