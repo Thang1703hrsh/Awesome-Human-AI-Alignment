@@ -4,6 +4,12 @@ taxonomy_mapping.md
 taxonomy.tex
 main.tex
 
+# Local-only project files (not published on GitHub)
+/.github/workflows/
+/modal_smoke/
+/pyproject.toml
+/Survey.tex
+
 # LaTeX build artifacts
 *.aux
 *.bbl
