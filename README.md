@@ -151,11 +151,25 @@ hai-align prepare distillation dckd \
 
 ## Taxonomy
 
+### Survey overview
+
+<p align="center">
+  <img src="./Figure/Human_AI_Alignment.png" alt="Overview of the Human–AI Alignment survey framework and application settings" width="80%">
+</p>
+
+<p align="center"><em>Human–AI alignment is organized as a lifecycle spanning alignment specification, supervision, mechanisms, and assurance across chat, code, mathematical reasoning, multimodal, agentic, robotics, and healthcare settings.</em></p>
+
+[View the high-resolution survey overview (PDF)](./Figure/Human_AI_Alignment.pdf)
+
+### Lifecycle taxonomy
+
 <p align="center">
   <img src="./Figure/Taxonomy.png" alt="Human–AI Alignment taxonomy" width="100%">
 </p>
 
-[View the high-resolution PDF](./Figure/Taxonomy.pdf)
+<p align="center"><em>The lifecycle taxonomy organizes Human–AI alignment into four dimensions and eight groups; the paper collection below further resolves them into 23 non-exclusive research branches.</em></p>
+
+[View the high-resolution taxonomy (PDF)](./Figure/Taxonomy.pdf)
 
 | Dimension | Guiding question | Groups |
 |---|---|---|
@@ -163,6 +177,26 @@ hai-align prepare distillation dckd \
 | **[Alignment Supervision](#alignment-supervision)** | Where do alignment signals come from, and how are they expressed and scaled? | [Feedback Source](#feedback-source) · [Feedback & Oversight](#feedback-oversight) |
 | **[Alignment Mechanisms](#alignment-mechanisms)** | How are alignment signals translated into model behavior during training and inference? | [Training-Time Alignment](#training-time-alignment) · [Inference-Time Alignment](#inference-time-alignment) |
 | **[Alignment Assurance](#alignment-assurance)** | How do we evaluate, stress-test, preserve, interpret, and monitor alignment? | [Evaluation & Robustness](#evaluation-robustness) · [System Assurance](#system-assurance) |
+
+### Training-time mechanisms at a glance
+
+<p align="center">
+  <img src="./Figure/training.png" alt="Five training-time alignment mechanisms" width="100%">
+</p>
+
+<p align="center"><em>Training-time alignment covers reward and verifier modeling, supervised alignment, preference optimization, reinforcement learning, and alignment distillation.</em></p>
+
+[View the high-resolution training-time diagram (PDF)](./Figure/training.pdf)
+
+### Inference-time mechanisms at a glance
+
+<p align="center">
+  <img src="./Figure/inference.png" alt="Four inference-time alignment mechanisms" width="100%">
+</p>
+
+<p align="center"><em>Inference-time alignment covers steering, search, iterative refinement, and interactive or agentic control while keeping the model policy fixed.</em></p>
+
+[View the high-resolution inference-time diagram (PDF)](./Figure/inference.pdf)
 
 ### Collection coverage
 
