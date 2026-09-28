@@ -6,7 +6,12 @@ from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
-import torch
+try:
+    import torch
+except ModuleNotFoundError as exc:
+    if exc.name != "torch":
+        raise
+    raise unittest.SkipTest("Requires optional torch") from exc
 
 from human_alignment import SafetyAlignment, align, safety_methods
 from human_alignment.catalog import validate_catalog

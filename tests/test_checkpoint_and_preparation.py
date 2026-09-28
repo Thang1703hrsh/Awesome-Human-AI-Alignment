@@ -13,6 +13,7 @@ from human_alignment import (
     prepare_preference_distillation_dataset,
 )
 from human_alignment.exceptions import ConfigurationError, DatasetFormatError
+from human_alignment.integrations.distillation_data import DistillationDataBackend
 from human_alignment.results import AssuranceReport
 from human_alignment.supervision.preference_distillation import (
     attach_generated_response,
@@ -89,7 +90,7 @@ class PreparationTests(unittest.TestCase):
                 "vpd", "output", teacher_score_mode="unsupported"
             )
 
-    @patch("human_alignment.integrations.distillation_data.DistillationDataBackend.prepare")
+    @patch.object(DistillationDataBackend, "prepare")
     def test_public_preparation_workflow(self, prepare):
         prepare.return_value = {"train": []}
         with tempfile.TemporaryDirectory() as directory:

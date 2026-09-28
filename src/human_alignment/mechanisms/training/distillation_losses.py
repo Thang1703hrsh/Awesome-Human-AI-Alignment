@@ -8,11 +8,13 @@ Transformers trainer stack.
 from __future__ import annotations
 
 from itertools import permutations
-from math import isfinite, log
+from math import isfinite
 from typing import Any, Mapping, Sequence
 
 import torch
 import torch.nn.functional as F
+
+from human_alignment.supervision._preference_math import compressed_log_ratio_advantages
 
 
 def compress_probabilities(
@@ -38,40 +40,6 @@ def compress_probabilities(
         }
         for token_indices, token_values, token_residual in zip(indices, values, residual)
     ]
-
-
-def compressed_log_ratio_advantages(
-    teacher: Sequence[Mapping[str, Any]],
-    reference: Sequence[Mapping[str, Any]],
-    *,
-    epsilon: float = 1e-8,
-) -> list[dict[str, list[float] | list[int]]]:
-    """Build sparse teacher-reference log-probability margins for ADPA."""
-
-    if len(teacher) != len(reference):
-        raise ValueError("Teacher and reference token sequences must have equal lengths")
-    if epsilon <= 0:
-        raise ValueError("epsilon must be positive")
-    output = []
-    for teacher_item, reference_item in zip(teacher, reference):
-        teacher_map = dict(zip(teacher_item.get("indices", ()), teacher_item.get("values", ())))
-        reference_map = dict(
-            zip(reference_item.get("indices", ()), reference_item.get("values", ()))
-        )
-        indices = sorted(set(teacher_map) | set(reference_map))
-        margins = [
-            log(max(float(teacher_map.get(index, epsilon)), epsilon))
-            - log(max(float(reference_map.get(index, epsilon)), epsilon))
-            for index in indices
-        ]
-        order = sorted(range(len(indices)), key=margins.__getitem__, reverse=True)
-        output.append(
-            {
-                "indices": [int(indices[index]) for index in order],
-                "values": [margins[index] for index in order],
-            }
-        )
-    return output
 
 
 def _score_matrix(scores: torch.Tensor, name: str) -> torch.Tensor:

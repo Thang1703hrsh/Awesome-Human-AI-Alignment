@@ -15,10 +15,6 @@ from human_alignment.integrations.preference_distillation import (
     _normalize_row,
     _tokenize_response,
 )
-from human_alignment.mechanisms.training.distillation_losses import (
-    causal_token_log_probs,
-    compress_probabilities,
-)
 from human_alignment.supervision.preference_distillation import (
     attach_generated_response,
     build_adpa_record,
@@ -87,6 +83,10 @@ def _compressed_response(
     top_k: int,
     torch: Any,
 ) -> list[dict[str, Any]]:
+    from human_alignment.mechanisms.training.distillation_losses import (
+        compress_probabilities,
+    )
+
     tokenized = _tokenize_response(tokenizer, prompt, response, config)
     inputs = _model_input(torch, tokenized, _device(model))
     labels = torch.tensor(
@@ -106,6 +106,10 @@ def _sequence_score(
     config: PreferenceDistillationConfig,
     torch: Any,
 ) -> float:
+    from human_alignment.mechanisms.training.distillation_losses import (
+        causal_token_log_probs,
+    )
+
     tokenized = _tokenize_response(tokenizer, prompt, response, config)
     inputs = _model_input(torch, tokenized, _device(model))
     labels = torch.tensor(

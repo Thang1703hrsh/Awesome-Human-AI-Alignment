@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Mapping, Sequence
 
 from human_alignment.exceptions import DatasetFormatError
+from human_alignment.supervision._preference_math import compressed_log_ratio_advantages
 
 
 def merge_compressed_probabilities(
@@ -52,10 +53,6 @@ def build_adpa_record(
     reference: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
     """Attach sparse teacher-reference log-ratio advantages for ADPA."""
-
-    from human_alignment.mechanisms.training.distillation_losses import (
-        compressed_log_ratio_advantages,
-    )
 
     return {
         **dict(record),
