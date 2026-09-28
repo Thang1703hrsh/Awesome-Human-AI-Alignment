@@ -17,9 +17,7 @@ A taxonomy-guided collection of research on specifying, supervising, implementin
 
 ## Overview
 
-This repository supports an ongoing survey of **Human–AI Alignment**. The organization follows the complete alignment pipeline: what the system should align to, how feedback and oversight communicate those requirements, how training and inference mechanisms shape behavior, and how alignment claims are evaluated and maintained.
-
-The branches are intentionally non-exclusive. A paper can appear in several places when it contributes to more than one alignment question. The compact figure emphasizes recent and representative work from 2023 onward; the collection below also retains foundational papers and canonicalizes duplicate citation aliases. For readability, the figure uses two combined leaves: **Feedback Representations** covers demonstrations/preferences and critique/process feedback, while **Supervised Alignment & Distillation** combines two training-time branches. The collection and machine-readable taxonomy retain all 23 terminal branches.
+This survey provides a **unified overview of Human–AI Alignment**. We propose a lifecycle taxonomy that organizes the field along four dimensions—alignment specification, supervision, mechanisms, and assurance—and use it to structure the literature across 23 non-exclusive research branches.
 
 ## Software framework
 
