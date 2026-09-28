@@ -1,5 +1,14 @@
 """Observable supervision signals, sources, and training datasets."""
 
+from human_alignment.supervision.ai_methods import (
+    ConstitutionalAI, GEval, LLMJudge, RLAIF, SelfInstruct, SelfRewarding,
+)
+from human_alignment.supervision.paper_data import PaperFeedbackDataset
+from human_alignment.supervision.backends import JSONFeedbackBackend
+from human_alignment.supervision.reward_losses import (
+    edit_masks, fine_grained_reward_loss, preference_reward_loss,
+)
+
 from human_alignment.supervision.datasets import (
     DatasetBundle,
     InstructionExample,
@@ -36,6 +45,9 @@ VerifiableFeedbackProvider = VerifiableFeedback
 SupervisionProvider = FeedbackProvider
 
 __all__ = [
+    "JSONFeedbackBackend",
+    "ConstitutionalAI", "GEval", "LLMJudge", "RLAIF", "SelfInstruct", "SelfRewarding",
+    "PaperFeedbackDataset", "edit_masks", "fine_grained_reward_loss", "preference_reward_loss",
     "AIFeedback",
     "AIFeedbackProvider",
     "attach_generated_response",

@@ -1,0 +1,18 @@
+# SACPO stage 1 (sacpo/script/train/pku_helpful(dpo)_safety_train.sh helpful_dpo): stock TRL DPO, full FT.
+# Reference global batch: 16 per device x GA 2 x 8 GPUs (FSDP) = 256.
+method: sacpo_dpo
+model: {policy: PKU-Alignment/alpaca-7b-reproduced}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF-30K, selection: better, tokenization: trl, max_length: 512,
+       max_prompt_length: 128}
+train:
+  output_dir: output/sacpo/helpful_dpo_0.1
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 32
+  learning_rate: 2.0e-5
+  lr_scheduler_type: cosine
+  warmup_steps: 0.03  # fraction of total steps
+  optim: adamw_torch
+  deepspeed: recipes/safety_alignment/deepspeed/zero2_offload.json
+method_args: {beta: 0.1}
+

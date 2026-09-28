@@ -1,0 +1,29 @@
+# MORLHF (RiC ppo/morlhf.py on TRL 0.8.0 PPOTrainer). Objectives: beaver reward (helpful) and -cost (harmless).
+# preference = [w, 1 - w]; RiC sweeps w over 0.1 ... 0.9.
+method: morlhf
+model: {policy: PKU-Alignment/alpaca-7b-reproduced, dtype: bf16}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF, train_split: train, max_length: 512}
+train: {output_dir: output/morlhf_w0.5}
+method_args:
+  reward_model: PKU-Alignment/beaver-7b-v1.0-reward
+  cost_model: PKU-Alignment/beaver-7b-v1.0-cost
+  preference: [0.5, 0.5]
+  epochs: 1
+  learning_rate: 1.0e-5
+  batch_size: 64
+  mini_batch_size: 1
+  gradient_accumulation_steps: 1
+  ppo_epochs: 4
+  init_kl_coef: 0.2
+  target: 3.0
+  horizon: 10000
+  early_stopping: true
+  target_kl: 1.0
+  max_grad_norm: 0.5
+  max_new_tokens: 128
+  temperature: 0.7
+  lora_r: 64
+  lora_alpha: 128
+  lora_dropout: 0.05
+  strip_mode: charset
+

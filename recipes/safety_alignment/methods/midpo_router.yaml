@@ -1,0 +1,26 @@
+# MidPO router (MidPO/scripts/mdpo_router.sh): frozen base + frozen experts, train only the routers.
+# Quirks reproduced by default: regulariser from the layer input (reg_source: layer_input), experts copied without
+# the LoRA alpha/r scale (expert_scale: 1.0), router MLP without activations (router_nonlinearity: false).
+method: midpo_router
+model: {policy: PKU-Alignment/alpaca-7b-reproduced, dtype: bf16}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF, selection: better, tokenization: safe_rlhf, max_length: 512}
+train:
+  output_dir: output/midpo/router
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-5
+  lr_scheduler_type: cosine
+  warmup_steps: 0.03  # fraction of total steps
+  weight_decay: 0.0
+  adam_beta2: 0.95
+  max_grad_norm: 1.0
+  param_groups: safe_rlhf
+method_args:
+  beta: 0.1
+  safety_expert: output/midpo/safety_expert
+  helpfulness_expert: output/midpo/helpfulness_expert
+  expert_scale: 1.0
+  reg_source: layer_input
+  router_nonlinearity: false
+

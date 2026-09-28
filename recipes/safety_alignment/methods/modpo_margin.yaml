@@ -1,0 +1,19 @@
+# MODPO stage 1 (modpo/scripts/modpo/beavertails/run.sh): DPO on `safer` pairs of PKU-SafeRLHF-10K -> margin model.
+# LoRA r 64, alpha 1 (sic), q/k/v/o; lr 5e-4; global batch 6 x GA 2 x 8 GPUs = 96; 10% held out with seed 0.
+method: modpo_margin
+model:
+  policy: PKU-Alignment/alpaca-7b-reproduced
+  lora: {r: 64, alpha: 1, dropout: 0.0, target_modules: [q_proj, k_proj, v_proj, o_proj]}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF-10K, holdout: 0.1, holdout_seed: 0, selection: safer,
+       tokenization: trl, max_length: 512, max_prompt_length: 256}
+train:
+  output_dir: output/modpo/margin_safer
+  num_train_epochs: 3
+  per_device_train_batch_size: 6
+  gradient_accumulation_steps: 16
+  learning_rate: 5.0e-4
+  lr_scheduler_type: cosine
+  warmup_steps: 0.1  # fraction of total steps
+  weight_decay: 0.05
+method_args: {beta: 0.1}
+

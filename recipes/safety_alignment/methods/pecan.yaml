@@ -1,0 +1,10 @@
+# PeCAN (CAN/safe_rlhf/algorithms/cdpo/dpo_alg2.py): relabel by implicit rewards of a helpful-DPO and a
+# safe-DPO model vs. the SFT reference, then DPO. Point helpful_model / safe_model at dpo_helpful / dpo_harmless.
+base: mocan.yaml
+method: pecan
+train: {output_dir: output/can/pecan_lam1.0}
+method_args:
+  lam: 1.0
+  helpful_model: output/dpo_helpful
+  safe_model: output/dpo_harmless
+

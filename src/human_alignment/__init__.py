@@ -4,6 +4,8 @@ from human_alignment.api import align, load_checkpoint, load_model, run_config
 from human_alignment.config import (
     CheckpointConfig,
     DPOConfig,
+    IPOConfig,
+    PreferenceOptimizationConfig,
     GRPOConfig,
     KTOConfig,
     PPOConfig,
@@ -12,6 +14,7 @@ from human_alignment.config import (
     SimPOConfig,
 )
 from human_alignment.mechanisms.training import (
+    BPO, IPO, TDPO, TIDPO, TISDPO, TBPOA, TBPOQ,
     ADPA,
     CTPD,
     DCKD,
@@ -24,6 +27,7 @@ from human_alignment.mechanisms.training import (
     TVKD,
     VPD,
     PreferenceDistillation,
+    SafetyAlignment,
     SimPO,
 )
 from human_alignment.pipeline import AlignmentPipeline
@@ -54,8 +58,11 @@ from human_alignment.workflows import (
     PreparedDistillationDataset,
     prepare_preference_distillation_dataset,
 )
+from human_alignment.safety import run_safety_config, run_safety_method, safety_methods
 
 __all__ = [
+    "BPO", "IPO", "IPOConfig", "PreferenceOptimizationConfig",
+    "TDPO", "TIDPO", "TISDPO", "TBPOA", "TBPOQ",
     "ADPA",
     "AlignmentPipeline",
     "AlignmentRun",
@@ -93,6 +100,7 @@ __all__ = [
     "PromptExample",
     "SFT",
     "SFTConfig",
+    "SafetyAlignment",
     "SimPO",
     "SimPOConfig",
     "Stakeholder",
@@ -106,6 +114,9 @@ __all__ = [
     "load_model",
     "prepare_preference_distillation_dataset",
     "run_config",
+    "run_safety_config",
+    "run_safety_method",
+    "safety_methods",
 ]
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

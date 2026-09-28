@@ -1,0 +1,6 @@
+# DPO-SafeBetter (SafeDPO paper §5.1): `better` pairs, dropping those whose preferred response is unsafe.
+base: _pku_dpo_base.yaml
+method: dpo_safebetter
+data: {selection: safe_better}
+train: {output_dir: output/dpo_safebetter}
+

@@ -1,0 +1,16 @@
+# CAN step 1 (CAN/safe_rlhf/trainers/model_based.py): sample from π_ref, score (safety = -cost), solve for λ*.
+# num_samples per prompt is not recorded in the repo; set it to what you can afford.
+method: can_dual
+model: {policy: PKU-Alignment/alpaca-7b-reproduced, dtype: bf16}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF-30K, train_split: train}
+train: {output_dir: output/can/dual}
+method_args:
+  reward_model: PKU-Alignment/beaver-7b-v1.0-reward
+  cost_model: PKU-Alignment/beaver-7b-v1.0-cost
+  num_prompts: 1000
+  num_samples: 64
+  max_new_tokens: 256
+  threshold: 0.0
+  kl_coeff: 0.1
+  lr: 2
+

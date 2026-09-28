@@ -1,0 +1,7 @@
+# MidPO helpfulness expert: `better` pairs, margin max(0, R(y_w) - R(y_l)) from a helpfulness reward model.
+base: midpo_safety_expert.yaml
+method: midpo_helpfulness_expert
+data: {selection: better}
+train: {output_dir: output/midpo/helpfulness_expert}
+method_args: {beta: 0.1, score_model: PKU-Alignment/beaver-7b-unified-reward}
+

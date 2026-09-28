@@ -1,0 +1,18 @@
+# CPO stage 1 / CPSFT (CPO/src/CPSFT): "< honesty: R > instruction" + response, loss on the whole text.
+# The released Hugging Face rows are converted in memory to the author's honesty-control format.
+# Reference: lr 1e-5, 8 per device x GA 32 x 8 GPUs, 3 epochs, cutoff 8192 (reduced to 2048 here for memory).
+method: cpsft
+model: {policy: PKU-Alignment/alpaca-7b-reproduced}
+data:
+  source: cpsft_hf
+  dataset: openbmb/UltraFeedback
+  train_split: train
+  max_length: 2048
+train:
+  output_dir: output/cpo/cpsft
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 256
+  learning_rate: 1.0e-5
+  deepspeed: recipes/safety_alignment/deepspeed/zero2_offload.json
+

@@ -69,6 +69,65 @@ class SFTConfig(TrainingConfig):
 
 
 @dataclass(frozen=True)
+class IPOConfig(DPOConfig):
+    loss_type: str = "ipo"
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.loss_type != "ipo":
+            raise ConfigurationError("IPO requires loss_type='ipo'")
+
+
+@dataclass(frozen=True)
+class PreferenceOptimizationConfig(TrainingConfig):
+    """Native BPO, TDPO, TIS-DPO, TI-DPO, and TokenRatio configuration.
+
+    Defaults are starting points, not a reproduction of published benchmark scores.
+    TIS-DPO consumes final token weights or estimates rank weights from two models.
+    """
+
+    beta: float = 0.1
+    max_prompt_length: int = 128
+    alpha: float = 0.5
+    tdpo2: bool = True
+    tis_token_level: bool = False
+    generator: str = "sba"
+    bregman_lambda: float = 0.2
+    bregman_scale: float = 4.0
+    log_ratio_clip: float = 30.0
+    label_smoothing: float = 0.0
+    baseline_clip: float = 10.0
+    baseline_learning_rate: float = 1e-4
+    importance_mix: float = 0.8
+    prior_sigma_div: float = 4.0
+    triplet_weight: float = 0.1
+    triplet_margin: float = 0.1
+    anchor_max_new_tokens: int = 64
+
+    def __post_init__(self) -> None:
+        import math
+
+        super().__post_init__()
+        for name in ("beta", "bregman_lambda", "bregman_scale", "log_ratio_clip",
+                     "baseline_clip", "baseline_learning_rate", "prior_sigma_div"):
+            value = getattr(self, name)
+            if not math.isfinite(value) or value <= 0:
+                raise ConfigurationError(f"{name} must be finite and positive")
+        for name in ("alpha", "triplet_weight", "triplet_margin"):
+            value = getattr(self, name)
+            if not math.isfinite(value) or value < 0:
+                raise ConfigurationError(f"{name} must be finite and non-negative")
+        if not 0 <= self.label_smoothing <= 0.5 or not 0 <= self.importance_mix <= 1:
+            raise ConfigurationError("Invalid label_smoothing or importance_mix")
+        if self.generator not in {"sba", "ba", "lsif", "kliep", "logistic"}:
+            raise ConfigurationError(f"Unknown Bregman generator: {self.generator}")
+        if self.max_length is None or not 1 <= self.max_prompt_length < self.max_length:
+            raise ConfigurationError("Require 1 <= max_prompt_length < max_length")
+        if self.anchor_max_new_tokens < 1:
+            raise ConfigurationError("anchor_max_new_tokens must be positive")
+
+
+@dataclass(frozen=True)
 class KTOConfig(TrainingConfig):
     beta: float = 0.1
 

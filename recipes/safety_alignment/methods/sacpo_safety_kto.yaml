@@ -1,0 +1,7 @@
+# SACPO stage 2 with KTO (safety labels per response); weights desirable 1, undesirable n_des/n_undes.
+base: sacpo_helpful_dpo.yaml
+method: sacpo_kto
+model: {policy: output/sacpo/helpful_dpo_0.1}
+train: {output_dir: output/sacpo/helpful_dpo_safety_kto_0.01, gradient_accumulation_steps: 8}
+method_args: {beta: 0.01, label_by: safe}
+

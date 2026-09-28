@@ -1,0 +1,8 @@
+# P-SACPO (sacpo/config/merge/linear_0.25.yaml): 0.75 x stage-1 helpful model + 0.25 x SACPO model.
+method: p_sacpo
+model: {dtype: bf16}
+train: {output_dir: output/sacpo/p_sacpo_0.25}
+method_args:
+  models: [output/sacpo/helpful_dpo_0.1, output/sacpo/helpful_dpo_safety_dpo_0.01]
+  weights: [0.75, 0.25]
+

@@ -1,0 +1,46 @@
+# SafeRLHF / PPO-Lagrangian (safe-rlhf scripts/ppo-lag.sh), single H100 with LoRA actor + LoRA critics.
+# Reference: 8 GPUs x 16 prompts, micro-batch 16, GA 1 -> 128 prompts per optimiser step and one λ update per step.
+# Single GPU: 128 prompts per rollout, 8 micro-batches of 16 (GA 8), λ updated every 8 rl_steps,
+# episode-cost window 128 per rank x 8 ranks = 1024.
+method: saferlhf
+model: {policy: PKU-Alignment/alpaca-7b-reproduced, dtype: bf16}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF, train_split: train, max_length: 512}
+train: {output_dir: output/saferlhf, seed: 42}
+method_args:
+  reward_model: PKU-Alignment/beaver-7b-v1.0-reward
+  cost_model: PKU-Alignment/beaver-7b-v1.0-cost
+  epochs: 1
+  update_iters: 1
+  per_device_prompt_batch_size: 128
+  per_device_train_batch_size: 16
+  gradient_accumulation_steps: 8
+  lambda_update_interval: 8
+  episode_cost_window_size: 1024
+  temperature: 1.0
+  top_p: 1.0
+  repetition_penalty: 1.0
+  num_return_sequences: 1
+  actor_lr: 1.0e-5
+  actor_weight_decay: 0.01
+  actor_lr_scheduler_type: cosine
+  actor_lr_warmup_ratio: 0.03
+  critic_lr: 5.0e-6
+  critic_weight_decay: 0.0
+  critic_lr_scheduler_type: constant
+  critic_lr_warmup_ratio: 0.03
+  threshold: 0.0
+  lambda_init: 1.0
+  lambda_lr: 0.1
+  lambda_max: 5.0
+  lambda_update_delay_steps: 0
+  kl_coeff: 0.01
+  clip_range_ratio: 0.2
+  clip_range_score: 50.0
+  clip_range_value: 5.0
+  ptx: true
+  ptx_coeff: 16.0
+  lora_r: 64
+  lora_alpha: 128
+  lora_dropout: 0.0
+  save_interval: 200
+

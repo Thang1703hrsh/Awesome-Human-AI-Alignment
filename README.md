@@ -22,6 +22,14 @@ The branches are intentionally non-exclusive. A paper can appear in several plac
 
 ## Software framework
 
+Reference components for 22 cited papers in Task & Assistance, Personalized
+Alignment, and Uncertainty & Drift are documented in
+[Alignment specification](./docs/ALIGNMENT_SPECIFICATION.md), with explicit
+implementation limits and an offline demo.
+
+Human Feedback and AI Feedback code, covering the supervision components of 17
+cited papers, is documented in [Alignment supervision](./docs/ALIGNMENT_SUPERVISION.md).
+
 The repository also provides a Python framework that mirrors the four lifecycle dimensions while keeping common workflows simple. The core has no runtime dependencies; training libraries are installed only for the methods that need them.
 
 ```bash
@@ -73,6 +81,33 @@ run = VPD(model="student-model", dataset=data, output_dir="outputs/student-vpd")
 
 See [Preference distillation](./docs/PREFERENCE_DISTILLATION.md) for objective-specific
 dataset schemas, teacher-model use, and migration details.
+
+Safety-alignment training is integrated under the same package, with 25 stages
+covering SafeRLHF, SafeDPO, BSO, SACPO, CAN, MODPO, CPO, BFPO, MidPO, reward and
+cost modeling, and multi-objective RLHF:
+
+```bash
+python -m pip install -e ".[safety]"
+hai-align safety list
+hai-align safety run recipes/safety_alignment/methods/safedpo.yaml
+```
+
+```python
+from human_alignment import SafetyAlignment
+
+run = SafetyAlignment(
+    config="recipes/safety_alignment/methods/safedpo.yaml",
+    output_dir="outputs/safedpo",
+).train()
+```
+
+See [Safety alignment](./docs/SAFETY_ALIGNMENT.md) for recipe dependencies,
+paper-faithful implementation choices, evaluation, and H100 workflows.
+
+Additional preference methods are available as `IPO`, `BPO`, `TDPO`, `TISDPO`,
+`TIDPO`, `TBPOQ`, and `TBPOA`, with recipes under `recipes/preference_optimization/`.
+See [Preference optimization](./docs/PREFERENCE_OPTIMIZATION.md) for installation,
+token-weight data formats, objective sources, and checkpoint handling.
 
 The library supports both ends of an alignment experiment:
 

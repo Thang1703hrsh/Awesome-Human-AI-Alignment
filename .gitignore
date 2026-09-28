@@ -1,25 +1,32 @@
-human_ai_alignment_refs.bib
-taxonomy_full_mapping.tex
-taxonomy_mapping.md
-taxonomy.tex
-main.tex
+# Generated publication helpers (the editable taxonomy and BibTeX database are
+# source files and should stay versioned).
+/taxonomy_full_mapping.tex
+/taxonomy_mapping.md
+/taxonomy.tex
+/main.tex
 
 # Local-only project files (not published on GitHub)
-/.github/workflows/
 /modal_smoke/
-/pyproject.toml
 /Survey.tex
 
+# Unreferenced local source material and image drafts
+/2026.acl-long.pdf
+/ChatGPT Image*.jpg
+/inferencefn.jpg
+
 # LaTeX build artifacts
+/.tikz-build/
 *.aux
 *.bbl
 *.bcf
 *.blg
+*.dvi
 *.fdb_latexmk
 *.fls
 *.glg
 *.glo
 *.gls
+*.ist
 *.idx
 *.ilg
 *.ind
@@ -41,16 +48,22 @@ main.tex
 __pycache__/
 *.py[cod]
 *.egg-info/
+.cache/
+.hypothesis/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.nox/
+.tox/
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 .ipynb_checkpoints/
 .venv/
 venv/
 env/
+.python-version
 dist/
 build/
 
@@ -58,6 +71,27 @@ build/
 runs/
 artifacts/
 /output/
+checkpoints/
+lightning_logs/
+mlruns/
+wandb/
+*.ckpt
+*.onnx
+*.pt
+*.pth
+*.safetensors
+pytorch_model*.bin
+
+# Local configuration, credentials, and private keys
+.env
+.env.*
+!.env.example
+!.env.sample
+*.key
+*.p12
+*.pfx
+*.pem
+.secrets/
 
 # Temporary files and logs
 /tmp/

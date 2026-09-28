@@ -1,0 +1,27 @@
+# CPO stage 2 / CDPO (CPO/src/CDPO/cdpo/cdpo_ultrasafety.py): control-tagged UltraSafety pairs + vanilla DPO.
+# Original: Mistral-7B 4-bit + unsloth, LoRA r 64 alpha 64 on all projections, lr = HF default 5e-5, adamw_8bit.
+# Here: bf16 base, adamw_torch; the prompt keeps the PKU template because the base model is alpaca-7b.
+method: cdpo
+model:
+  policy: PKU-Alignment/alpaca-7b-reproduced
+  lora: {r: 64, alpha: 64, dropout: 0.0,
+         target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]}
+data:
+  source: cpo_ultrasafety
+  dataset: openbmb/UltraSafety
+  train_split: train
+  paths: []
+  tokenization: trl
+  max_length: 1024
+  max_prompt_length: 512
+train:
+  output_dir: output/cpo/cdpo
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 5.0e-5
+  lr_scheduler_type: linear
+  warmup_steps: 0.1  # fraction of total steps
+  seed: 42
+method_args: {beta: 0.1, variant: ultrasafety}
+

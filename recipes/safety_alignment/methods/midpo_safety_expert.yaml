@@ -1,0 +1,23 @@
+# MidPO safety expert (MidPO/scripts/mdpo_safety_expert.sh): LoRA r16 alpha32 on down_proj, `safer` pairs,
+# margin min(0, S(y_w) - S(y_l)) from a frozen score model. The repo loads '/root/.../safety-reward-eval';
+# the sign convention of the loss implies a cost-like score, so we default to beaver-7b-unified-cost.
+# Reference global batch: 4 per device x GA 1 x 8 GPUs (assumed) = 32.
+method: midpo_safety_expert
+model:
+  policy: PKU-Alignment/alpaca-7b-reproduced
+  lora: {r: 16, alpha: 32, dropout: 0.0, target_modules: [down_proj]}
+data: {dataset: PKU-Alignment/PKU-SafeRLHF, selection: safer, tokenization: safe_rlhf, max_length: 512}
+train:
+  output_dir: output/midpo/safety_expert
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 1.0e-5
+  lr_scheduler_type: cosine
+  warmup_steps: 0.03  # fraction of total steps
+  weight_decay: 0.01
+  adam_beta2: 0.95
+  max_grad_norm: 1.0
+  param_groups: safe_rlhf
+method_args: {beta: 0.1, score_model: PKU-Alignment/beaver-7b-unified-cost}
+

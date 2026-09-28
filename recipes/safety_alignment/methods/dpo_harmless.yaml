@@ -1,0 +1,5 @@
+base: _pku_dpo_base.yaml
+method: dpo_harmless
+data: {selection: safer}
+train: {output_dir: output/dpo_harmless}
+

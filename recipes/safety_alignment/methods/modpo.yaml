@@ -1,0 +1,13 @@
+# MODPO (modpo/src/trainer/modpo_trainer.py): train on `better` pairs with the safer-DPO adapter as margin.
+# w -> (w, 1 - w); the paper sweeps w in {0.1, 0.5, 0.9}.
+base: modpo_margin.yaml
+method: modpo
+data: {selection: better}
+train: {output_dir: output/modpo/w0.5}
+method_args:
+  beta: 0.1
+  margin_beta: 0.1
+  modpo_w: [0.5, 0.5]
+  modpo_loss_type: sigmoid
+  margin_adapter: output/modpo/margin_safer
+

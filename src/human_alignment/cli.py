@@ -116,6 +116,30 @@ def _prepare_distillation(args: argparse.Namespace) -> int:
     return 0
 
 
+def _safety(args: argparse.Namespace) -> int:
+    from human_alignment.safety.cli import main as safety_main
+
+    return safety_main(args.safety_args)
+
+
+def _prepare_feedback(args: argparse.Namespace) -> int:
+    from pathlib import Path
+    from human_alignment.supervision import PaperFeedbackDataset, prepare_dataset
+    from human_alignment.supervision.datasets import _read_local
+
+    signals = PaperFeedbackDataset(args.format, _read_local(Path(args.dataset)),
+                                   annotation_source=args.annotation_source).convert()
+    records = prepare_dataset(signals, args.kind).data
+    serialized = "".join(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                         for row in records)
+    destination = Path(args.output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("x", encoding="utf-8") as stream:
+        stream.write(serialized)
+    print(json.dumps({"format": args.format, "rows": len(records), "output": str(destination)}))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="hai-align", description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
@@ -147,6 +171,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     prepare_parser = commands.add_parser("prepare", help="Prepare alignment supervision")
     prepare_commands = prepare_parser.add_subparsers(dest="prepare_command", required=True)
+    from human_alignment.supervision import PaperFeedbackDataset
+
+    feedback_parser = prepare_commands.add_parser("feedback", help="Normalize paper feedback data")
+    feedback_parser.add_argument("format", choices=sorted(PaperFeedbackDataset.FORMATS))
+    feedback_parser.add_argument("--dataset", required=True, help="Local JSON or JSONL records")
+    feedback_parser.add_argument("--output", required=True, help="New JSONL file (no overwrite)")
+    feedback_parser.add_argument("--kind", choices=("preference", "instruction"), default="preference")
+    feedback_parser.add_argument("--annotation-source", choices=("human", "ai", "hybrid"),
+                                 default="human")
+    feedback_parser.set_defaults(handler=_prepare_feedback)
     distillation_parser = prepare_commands.add_parser(
         "distillation", help="Prepare DCKD, TVKD, ADPA, CTPD, PPD, or VPD data"
     )
@@ -183,6 +217,12 @@ def build_parser() -> argparse.ArgumentParser:
     generate_parser.add_argument("--dtype")
     generate_parser.add_argument("--trust-remote-code", action="store_true")
     generate_parser.set_defaults(handler=_generate)
+
+    safety_parser = commands.add_parser(
+        "safety", help="Run integrated safety-alignment training and evaluation"
+    )
+    safety_parser.add_argument("safety_args", nargs=argparse.REMAINDER)
+    safety_parser.set_defaults(handler=_safety)
     return parser
 
 

@@ -1,0 +1,28 @@
+# BFPO (bfpo/bfpo.sh + recipes/zephyr-7b-beta/{bfpo/selective.yaml,data/balance_bfpo.yaml}).
+# First 20% of PKU-SafeRLHF (pinned revision) shuffled with seed 42; UltraFeedback buffer replayed every step;
+# "selective": only down_proj weights are trained. Global batch 2 x GA 4 x 4 GPUs = 32.
+# Original base: zephyr-7b SFT with its chat template; here alpaca-7b with the PKU template.
+method: bfpo
+model:
+  policy: PKU-Alignment/alpaca-7b-reproduced
+  trainable_substrings: [down_proj]
+data:
+  dataset: PKU-Alignment/PKU-SafeRLHF
+  revision: ff7ba91063016c78a225b0f74e1c0860bb18230f
+  fraction: 0.2
+  shuffle_seed: 42
+  selection: better
+  tokenization: trl
+  max_length: 1024
+  max_prompt_length: 512
+train:
+  output_dir: output/bfpo
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 16
+  learning_rate: 5.0e-7
+  lr_scheduler_type: cosine
+  warmup_steps: 0.1  # fraction of total steps
+  optim: adamw_torch
+method_args: {beta: 0.01, b1: 3.0, alpha: 0.5, use_buffer: true}
+

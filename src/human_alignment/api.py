@@ -33,6 +33,7 @@ def align(
 
     method_id = method.lower()
     runnable = {
+        "ipo", "bpo", "tdpo", "tis_dpo", "ti_dpo", "tbpo_q", "tbpo_a",
         "adpa",
         "ctpd",
         "dckd",
@@ -46,6 +47,31 @@ def align(
         "simpo",
         "tvkd",
         "vpd",
+        "safety_sft",
+        "cpsft",
+        "reward_model",
+        "cost_model",
+        "dpo_helpful",
+        "dpo_harmless",
+        "dpo_safebetter",
+        "saferlhf",
+        "safety_ppo",
+        "morlhf",
+        "sacpo_dpo",
+        "sacpo_kto",
+        "p_sacpo",
+        "can_dual",
+        "mocan",
+        "pecan",
+        "modpo_margin",
+        "modpo",
+        "cdpo",
+        "bfpo",
+        "midpo_safety_expert",
+        "midpo_helpfulness_expert",
+        "midpo_router",
+        "safedpo",
+        "bso",
     }
     if method_id not in runnable:
         raise ConfigurationError(

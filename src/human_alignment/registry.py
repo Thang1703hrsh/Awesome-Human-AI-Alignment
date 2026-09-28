@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from functools import partial
 from typing import Any, Callable, Iterable
 
 from human_alignment.catalog import load_methods
@@ -91,6 +92,10 @@ class MethodRegistry:
 
 
 def default_registry() -> MethodRegistry:
+    from human_alignment.supervision import (
+        AIFeedback, HumanFeedback, ConstitutionalAI, GEval, LLMJudge,
+        RLAIF, SelfInstruct, SelfRewarding, PaperFeedbackDataset,
+    )
     from human_alignment.assurance import (
         AlignmentPreservation,
         BehavioralEvaluation,
@@ -105,6 +110,7 @@ def default_registry() -> MethodRegistry:
         IterativeRefinement,
     )
     from human_alignment.mechanisms.training import (
+        BPO, IPO, TDPO, TIDPO, TISDPO, TBPOA, TBPOQ,
         ADPA,
         AlignmentDistillation,
         CTPD,
@@ -116,6 +122,7 @@ def default_registry() -> MethodRegistry:
         PPD,
         PreferenceDistillation,
         RewardVerifierModeling,
+        SafetyAlignment,
         SFT,
         SimPO,
         TVKD,
@@ -123,6 +130,21 @@ def default_registry() -> MethodRegistry:
     )
 
     factories = {
+        "human_feedback": HumanFeedback,
+        "ai_feedback": AIFeedback,
+        "constitutional_ai": ConstitutionalAI,
+        "rlaif": RLAIF,
+        "self_instruct": SelfInstruct,
+        "llm_judge": LLMJudge,
+        "g_eval": GEval,
+        "self_rewarding": SelfRewarding,
+        "ipo": IPO,
+        "bpo": BPO,
+        "tdpo": TDPO,
+        "tis_dpo": TISDPO,
+        "ti_dpo": TIDPO,
+        "tbpo_q": TBPOQ,
+        "tbpo_a": TBPOA,
         "dpo": DPO,
         "sft": SFT,
         "kto": KTO,
@@ -148,7 +170,51 @@ def default_registry() -> MethodRegistry:
         "alignment_preservation": AlignmentPreservation,
         "monitoring_audit": MonitoringAudit,
     }
+    from human_alignment.specification.methods import factories as specification_factories
+    factories.update(specification_factories())
+    safety_factories = {
+        "safety_sft": "sft",
+        "cpsft": "cpsft",
+        "reward_model": "reward_model",
+        "cost_model": "cost_model",
+        "dpo_helpful": "dpo_helpful",
+        "dpo_harmless": "dpo_harmless",
+        "dpo_safebetter": "dpo_safebetter",
+        "saferlhf": "saferlhf",
+        "safety_ppo": "ppo",
+        "morlhf": "morlhf",
+        "sacpo_dpo": "sacpo_dpo",
+        "sacpo_kto": "sacpo_kto",
+        "p_sacpo": "p_sacpo",
+        "can_dual": "can_dual",
+        "mocan": "mocan",
+        "pecan": "pecan",
+        "modpo_margin": "modpo_margin",
+        "modpo": "modpo",
+        "cdpo": "cdpo",
+        "bfpo": "bfpo",
+        "midpo_safety_expert": "midpo_safety_expert",
+        "midpo_helpfulness_expert": "midpo_helpfulness_expert",
+        "midpo_router": "midpo_router",
+        "safedpo": "safedpo",
+        "bso": "bso",
+    }
+    factories.update({name: partial(PaperFeedbackDataset, format=name)
+                      for name in PaperFeedbackDataset.FORMATS})
+    factories.update(
+        {
+            public_id: partial(SafetyAlignment, method=safety_method)
+            for public_id, safety_method in safety_factories.items()
+        }
+    )
     extras = {
+        "ipo": "dpo",
+        "bpo": "preference",
+        "tdpo": "preference",
+        "tis_dpo": "preference",
+        "ti_dpo": "preference",
+        "tbpo_q": "preference",
+        "tbpo_a": "preference",
         "dpo": "dpo",
         "sft": "sft",
         "kto": "trl",
@@ -163,6 +229,9 @@ def default_registry() -> MethodRegistry:
         "ppd": "distillation",
         "vpd": "distillation",
     }
+    extras.update({method_id: "safety" for method_id in safety_factories})
+    extras.update({name: "specification" for name in
+                   ("vpl", "distributional_preference", "copr", "wdpo", "kldpo", "pad", "fpps")})
     registry = MethodRegistry()
     for row in load_methods():
         categories = tuple(row["taxonomy_categories"])

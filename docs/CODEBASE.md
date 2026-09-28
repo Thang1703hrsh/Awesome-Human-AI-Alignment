@@ -4,6 +4,15 @@ The package keeps the survey's four lifecycle dimensions visible while exposing 
 
 ## Quick start
 
+Task constraints, personalized targets, uncertainty, and supporting components
+for 22 specification citations are described in
+[Alignment specification](ALIGNMENT_SPECIFICATION.md). These are reference
+kernels/adapters rather than full paper reproductions.
+
+Human/AI feedback adapters and workflows for the survey's 17 cited papers are
+documented in [Alignment supervision](ALIGNMENT_SUPERVISION.md), including
+supported schemas, model backends, source links, and implementation limits.
+
 The dependency-free core supports catalog inspection, pipeline composition, and custom adapters:
 
 ```bash
@@ -112,6 +121,9 @@ public method -> dataset normalization -> optional integration -> AlignmentRun
 - `supervision/datasets.py` validates local records and common examples.
 - `integrations/trl.py` is the only module coupled to TRL trainer APIs.
 - `integrations/preference_distillation.py` implements the shared Transformers trainer for VPD, PPD, DCKD, TVKD, ADPA, and CTPD.
+- `safety/` contains the migrated safety-alignment losses, data builders,
+  trainers, evaluators, resource manifest, and recipe runner. Its ML imports
+  remain lazy, and `mechanisms/training/safety.py` adapts runs to `AlignmentRun`.
 - `integrations/distillation_data.py` executes teacher/student models to prepare
   their method-specific supervision.
 - `integrations/transformers.py` owns model loading and basic generation.
@@ -123,6 +135,27 @@ public method -> dataset normalization -> optional integration -> AlignmentRun
 - `catalog/` contains survey metadata and never initiates training.
 
 Optional dependencies are imported lazily. Importing `human_alignment` does not require PyTorch, Transformers, TRL, datasets, or vLLM.
+
+## Safety-alignment workflows
+
+The integrated safety stack preserves all 25 stages from the former standalone
+project. Recipes live under `recipes/safety_alignment/` and can be inspected or
+executed through the main CLI:
+
+```bash
+hai-align safety show recipes/safety_alignment/methods/safedpo.yaml
+hai-align safety run recipes/safety_alignment/methods/safedpo.yaml \
+  method_args.delta=5 train.output_dir=outputs/safedpo-d5
+```
+
+For programmatic use, construct `SafetyAlignment` with a recipe path or call
+`run_safety_config()`. Safety-specific IDs such as `safedpo`, `bso`, `saferlhf`,
+and `midpo_router` are also registered with `align()`. The conflicting generic
+stage names use `safety_sft` and `safety_ppo` in the main registry, while the
+safety CLI retains the original `sft` and `ppo` recipe method names.
+
+See [Safety alignment](./SAFETY_ALIGNMENT.md) for the complete method matrix,
+reproduction constraints, and evaluation protocol.
 
 ## Loading checkpoints
 

@@ -126,9 +126,15 @@ def _signal_record(signal: SupervisionSignal, kind: str) -> dict[str, Any]:
             "prompt": signal.context.input,
             "chosen": payload.options[payload.preferred_index],
             "rejected": payload.options[rejected_index],
+            "metadata": {"source": signal.source.value, "confidence": signal.confidence,
+                         "provenance": dict(signal.provenance),
+                         "attributes": dict(payload.attributes)},
         }
     if kind == "instruction" and isinstance(payload, Demonstration):
-        return {"prompt": signal.context.input, "completion": payload.output}
+        return {"prompt": signal.context.input, "completion": payload.output,
+                "metadata": {"source": signal.source.value, "confidence": signal.confidence,
+                             "provenance": dict(signal.provenance),
+                             "attributes": dict(payload.attributes)}}
     raise DatasetFormatError(
         f"Cannot convert {type(payload).__name__} supervision to a {kind} dataset"
     )
@@ -156,6 +162,11 @@ def _validate(records: Sequence[Mapping[str, Any]], kind: str) -> None:
     if not records:
         raise DatasetFormatError("The dataset is empty")
     for index, record in enumerate(records):
+        if kind == "preference" and "chosen_input_ids" in record:
+            token_fields = ("chosen_input_ids", "chosen_labels", "rejected_input_ids", "rejected_labels")
+            if any(key not in record for key in token_fields):
+                raise DatasetFormatError(f"Dataset row {index} requires token IDs and labels for both responses")
+            continue
         if kind == "preference_distillation":
             has_ranked_responses = "prompt" in record and "responses" in record
             has_pair = "chosen" in record and "rejected" in record

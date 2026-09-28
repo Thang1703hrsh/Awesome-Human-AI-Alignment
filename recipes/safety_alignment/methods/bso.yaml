@@ -1,0 +1,10 @@
+# BSO (arXiv 2605.12339): SBA generator, C = 30, λ = 0.2, s = 4 (Table 2, Appendix D), swap/drop transform (§3.5).
+# β and optimiser settings are not reported -> SafeDPO Table 4 (same benchmark and baselines).
+# penalty_inside_beta=false follows Eq. 12/18 literally (log R = -(β h + C Δs)); see docs/safety_alignment/PORTING_PLAN.md.
+base: _pku_dpo_base.yaml
+method: bso
+data: {selection: safedpo}
+train: {output_dir: output/bso}
+method_args: {beta: 0.1, safety_penalty: 30.0, bso_generator: sba, bso_lambda: 0.2, bso_s: 4.0,
+              bso_penalty_inside_beta: false}
+

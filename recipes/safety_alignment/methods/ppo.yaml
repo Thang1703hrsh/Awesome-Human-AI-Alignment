@@ -1,0 +1,6 @@
+# PPO on the reward only (safe-rlhf scripts/ppo.sh: kl_coeff 0.02), same single-GPU layout as saferlhf.yaml.
+base: saferlhf.yaml
+method: ppo
+train: {output_dir: output/ppo}
+method_args: {kl_coeff: 0.02}
+

@@ -1,0 +1,5 @@
+base: _pku_dpo_base.yaml
+method: dpo_helpful
+data: {selection: better}
+train: {output_dir: output/dpo_helpful}
+

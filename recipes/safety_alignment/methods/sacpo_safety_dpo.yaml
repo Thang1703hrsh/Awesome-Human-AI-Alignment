@@ -1,0 +1,8 @@
+# SACPO stage 2: safety DPO starting from (and referenced to) the stage-1 model. β swept over {0.1, 0.05, 0.025, 0.01}.
+# Reference global batch: 16 x GA 2 x 2 GPUs = 64.
+base: sacpo_helpful_dpo.yaml
+model: {policy: output/sacpo/helpful_dpo_0.1}
+data: {selection: safer}
+train: {output_dir: output/sacpo/helpful_dpo_safety_dpo_0.01, gradient_accumulation_steps: 8}
+method_args: {beta: 0.01}
+

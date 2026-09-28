@@ -1,0 +1,19 @@
+# Starting configuration; replace model/data with your SFT policy and preference data.
+method = "tbpo_a"
+model = "HuggingFaceH4/mistral-7b-sft-alpha"
+dataset = "data/preference_pairs.jsonl"
+output_dir = "outputs/tbpo_a"
+
+[training]
+beta = 0.1
+learning_rate = 5e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 8
+max_length = 1024
+max_prompt_length = 128
+generator = "sba"
+bregman_lambda = 0.2
+bregman_scale = 4.0
+
+

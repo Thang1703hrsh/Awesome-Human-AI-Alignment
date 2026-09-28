@@ -73,7 +73,7 @@ def validate_catalog() -> CatalogValidation:
         errors.append("Terminal category IDs must be unique")
 
     required = {"id", "name", "taxonomy_categories", "stage", "implementation_status"}
-    allowed_stages = {"supervision", "training", "inference", "assurance"}
+    allowed_stages = {"specification", "supervision", "training", "inference", "assurance"}
     allowed_statuses = {"catalog", "adapter", "reference", "native", "external"}
     method_ids = [str(item.get("id", "")) for item in methods]
     if len(method_ids) != len(set(method_ids)):
