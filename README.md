@@ -10,10 +10,10 @@ A taxonomy-guided collection of research on specifying, supervising, implementin
 
 ## News
 
-- **2026-09-29:** Synchronized the collection with the revised taxonomy and bibliography, expanding it to 451 unique works.
+<!-- - **2026-09-29:** Synchronized the collection with the revised taxonomy and bibliography, expanding it to 451 unique works.
 - **2026-09-24:** Expanded the collection to 416 unique works and synchronized all 23 branches with the lifecycle taxonomy.
 - **2026-09-10:** Expanded the collection and synchronized all 23 branches with the revised taxonomy.
-- **2026-09-09:** Released the first public taxonomy and paper collection.
+- **2026-09-09:** Released the first public taxonomy and paper collection. -->
 
 ## Overview
 
