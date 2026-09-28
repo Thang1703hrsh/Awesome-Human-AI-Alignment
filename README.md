@@ -146,7 +146,7 @@ hai-align prepare distillation dckd \
   <img src="./Figure/Taxonomy.png" alt="Human–AI Alignment taxonomy" width="100%">
 </p>
 
-[View the high-resolution PDF](./Figure/Taxonomy.pdf) · [Edit the taxonomy source](./Figure/Taxonomy.tex)
+[View the high-resolution PDF](./Figure/Taxonomy.pdf)
 
 | Dimension | Guiding question | Groups |
 |---|---|---|
@@ -955,9 +955,8 @@ These surveys span several branches and are kept outside any single technical ca
 Contributions and bibliographic corrections are welcome:
 
 1. Add or update the complete record in [`human_ai_alignment_refs.bib`](./human_ai_alignment_refs.bib). Prefer the final venue page and DOI; use arXiv when no archival version is available.
-2. Add recent representative work to the relevant panel in [`Figure/Taxonomy.tex`](./Figure/Taxonomy.tex) with `\taxpaper{Short name}{citation-key}`.
-3. Add papers to every branch they substantively address; assignments do not need to be exclusive.
-4. Explain the proposed placement and include a stable public paper link in the pull request.
+2. Add papers to every branch they substantively address; assignments do not need to be exclusive.
+3. Explain the proposed placement and include a stable public paper link in the pull request.
 
 Suggested inclusion criteria:
 
@@ -969,7 +968,6 @@ Suggested inclusion criteria:
 
 | File | Purpose |
 |---|---|
-| [`Figure/Taxonomy.tex`](./Figure/Taxonomy.tex) | Editable TikZ source for the taxonomy |
 | [`Figure/Taxonomy.pdf`](./Figure/Taxonomy.pdf) | High-resolution taxonomy figure |
 | [`Figure/Taxonomy.png`](./Figure/Taxonomy.png) | Taxonomy preview used in this README |
 | [`human_ai_alignment_refs.bib`](./human_ai_alignment_refs.bib) | Complete BibTeX database |

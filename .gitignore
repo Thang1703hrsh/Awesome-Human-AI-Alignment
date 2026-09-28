@@ -1,5 +1,6 @@
-# Generated publication helpers (the editable taxonomy and BibTeX database are
-# source files and should stay versioned).
+# Local publication helpers (the rendered taxonomy assets stay versioned).
+/Figure/Taxonomy.tex
+/Figure/convert.py
 /taxonomy_full_mapping.tex
 /taxonomy_mapping.md
 /taxonomy.tex
