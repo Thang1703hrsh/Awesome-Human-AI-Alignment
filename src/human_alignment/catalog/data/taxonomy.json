@@ -20,7 +20,7 @@
           "categories": [
             {"id": "personalized_alignment", "name": "Personalized Alignment"},
             {"id": "pluralistic_societal_alignment", "name": "Pluralistic & Societal Alignment"},
-            {"id": "uncertainty_drift", "name": "Uncertainty & Drift"}
+            {"id": "uncertainty_drift", "name": "Context, Uncertainty & Drift"}
           ]
         }
       ]
@@ -71,7 +71,7 @@
           "name": "Inference-Time Alignment",
           "categories": [
             {"id": "steering_search_refinement", "name": "Steering, Search & Refinement"},
-            {"id": "human_control", "name": "Human Control"}
+            {"id": "human_control", "name": "Interactive & Agentic Control"}
           ]
         }
       ]

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import torch
 
@@ -31,7 +31,9 @@ def load_prompt_rows(
     config: str | None = None,
     prompt_column: str | None = None,
     limit: int | None = None,
+    keep_columns: Sequence[str] = (),
 ) -> list[dict]:
+    """Prompt rows ``{id, prompt, source}``; ``keep_columns`` copies extra fields (e.g. XSTest's ``label``)."""
     from datasets import load_dataset
 
     path = Path(dataset)
@@ -41,8 +43,12 @@ def load_prompt_rows(
         ds = load_dataset(dataset, config, split=split)
     if limit is not None:
         ds = ds.select(range(min(limit, len(ds))))
+    missing = [c for c in keep_columns if c not in ds.column_names]
+    if missing:
+        raise ValueError(f"columns {missing} not in {dataset}; available: {ds.column_names}")
     return [
         {
+            **{c: row[c] for c in keep_columns},
             "id": row.get("id", i),
             "prompt": prompt_from_row(row, prompt_column),
             "source": dataset,

@@ -96,5 +96,11 @@
   {"id": "evaluator_reliability", "name": "Evaluator Reliability", "taxonomy_categories": ["behavioral_evaluator_evaluation"], "stage": "assurance", "implementation_status": "reference"},
   {"id": "robustness_evaluation", "name": "Robustness Evaluation", "taxonomy_categories": ["adversarial_distribution_robustness"], "stage": "assurance", "implementation_status": "reference"},
   {"id": "alignment_preservation", "name": "Alignment Preservation", "taxonomy_categories": ["alignment_preservation"], "stage": "assurance", "implementation_status": "reference"},
-  {"id": "monitoring_audit", "name": "Monitoring and Auditing", "taxonomy_categories": ["monitoring_auditing"], "stage": "assurance", "implementation_status": "reference"}
+  {"id": "monitoring_audit", "name": "Monitoring and Auditing", "taxonomy_categories": ["monitoring_auditing"], "stage": "assurance", "implementation_status": "reference"},
+  {"id": "caa", "name": "Contrastive Activation Addition", "taxonomy_categories": ["steering_search_refinement"], "stage": "inference", "implementation_status": "native"},
+  {"id": "reward_best_of_n", "name": "Best-of-N with a Reward Model", "taxonomy_categories": ["reward_verifier_modeling", "steering_search_refinement"], "stage": "inference", "implementation_status": "native"},
+  {"id": "args", "name": "ARGS Reward-Guided Decoding", "taxonomy_categories": ["reward_verifier_modeling", "steering_search_refinement"], "stage": "inference", "implementation_status": "native"},
+  {"id": "rewardbench2", "name": "RewardBench 2 Evaluator", "taxonomy_categories": ["reward_verifier_modeling", "behavioral_evaluator_evaluation"], "stage": "assurance", "implementation_status": "native"},
+  {"id": "judgebench", "name": "JudgeBench Evaluator", "taxonomy_categories": ["behavioral_evaluator_evaluation"], "stage": "assurance", "implementation_status": "native"},
+  {"id": "alpacaeval", "name": "AlpacaEval 2 Evaluator", "taxonomy_categories": ["behavioral_evaluator_evaluation"], "stage": "assurance", "implementation_status": "native"}
 ]

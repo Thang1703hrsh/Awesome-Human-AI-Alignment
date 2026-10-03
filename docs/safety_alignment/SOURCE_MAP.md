@@ -21,7 +21,7 @@ standalone clone.
 | BFPO | 2408.15313 | `bfpo/src/alignment/trainer/bfpo.py`, buffer in `trainer.py` | `losses/preference.py::bfpo_loss`, pairwise trainer | `test_losses_vs_reference::test_bfpo_matches_reference`, `test_trainers_tiny::test_bfpo_buffer_adds_loss` |
 | MidPO | EMNLP-F 2025 | `MidPO/safe_rlhf/algorithms/mdpo/*` | `losses/preference.py::midpo_expert_loss`, `methods/midpo.py` | `test_losses_vs_reference::test_midpo_expert_full_loss_matches_reference`, `test_midpo_router` |
 | SafeDPO | 2505.20065 (no code) | paper §3, Eq. 11–12, App. B.1 | `safedpo_loss`, `pairs.safedpo_transform` | `test_losses_vs_reference::test_safedpo_*`, `test_real_data` |
-| BSO | 2605.12339 (no code) | paper §3, Eq. 12–24, App. D, F | `bso_loss`, `bso_per_sample` | `test_losses_vs_reference::test_bso_*` |
+| BSO | 2605.12339; authors' SafeBPO code (branch `flip`, commit `db25ee3`) | `loss/h_function.py` (`make_h`, `HFunc.loss_from_logR`), `loss/loss.py::safe_bpo_log_r`, `trainers.py::SafeBPO_concatenated_forward`, `preference_datasets.py` (PKU safety labels, `flip_unsafe_chosen`, `tokenize_batch_element`), `evaluate/single_model_eval.py`, `evaluate/xstest.py`, `evaluate/gpt4/eval.py`, `script/train/bpo_safety_{0_5B,llama_3B}_sba_flip.sh` | `losses/preference.py::bso_loss`, `bso_per_sample`; `data/pairs.py` (`safedpo`, `drop_both_unsafe`); `data/tokenize.py::chat_encode_pair`; `eval/rubric_judge.py`; `bso_qwen2.5_0.5b.yaml`, `bso_llama3.2_3b.yaml` | `tests/test_bso.py` (gradients equal a frozen copy of the authors' closed forms; chat tokenization checked against the source on the Qwen2.5 tokenizer during the port) |
 
 Not ported (outside the method list): RiC itself (`RiC/ric`), PPO reward shaping, the RiC text-to-image variant.
 
@@ -32,8 +32,12 @@ Notation: `Δπ(y) = log πθ(y|x) − log πref(y|x)` summed over response toke
 * **DPO** `−logσ(β h)`, β = 0.1.
 * **SafeDPO** on T(D) (keep if y_w safe; swap if y_w unsafe and y_l safe; drop if both unsafe):
   `−logσ(β h − (h̃_l − h̃_w) Δ)`, Δ = 10.
-* **BSO** `log R = −(β h + C (s_w − s_l))`, `ℓ = h'(R)R − h(R) − h'(1/R)`; SBA_λ: `ℓ = [λR^{1+λ} − (1+λ)R^{−λ} + 1]/(sλ(λ+1))`,
-  C = 30, λ = 0.2, s = 4, on T(D).
+* **BSO** `log R = −(β h + C (s_w − s_l))` (s = 1 for unsafe; C outside β, as in the authors' code),
+  `ℓ = h'(R)R − h(R) − h'(1/R)` on `clamp(log R, −30, 30)`; SBA_λ: `ℓ = [λR^{1+λ} − (1+λ)R^{−λ} + 1]/(sλ(λ+1))`,
+  C = 30, λ = 0.2 (Qwen2.5-0.5B) or 0.3 (Llama-3.2-3B), s = 4, on T(D). Also φ_μ (`SafeBPO.yaml` default, μ = 1.5),
+  BA, KLIEP, LSIF, logistic, and label smoothing ε: `(1−ε)ℓ(log R) + εℓ(−log R)`.
+  Deviation kept on purpose: the source's LSIF branch returns `R² − 2R`, which does not follow from h = (R − 1)²;
+  the library uses the derived `R² − 2/R + 1`.
 * **BFPO** `(h − (1/β)(b1·b3·s_w − b3·s_l − α))²`, b1 = 3, b3 = 1/(b1−1), α = 0.5, s = 1 for safe; plus the same
   loss on an UltraFeedback buffer batch every step.
 * **MODPO** `R(y) = (1/w0)[β Δπ(y) − w[1:]·m(y)]`, `−logσ(R_w − R_l)`, m = β_m(log π_margin − log π_ref).

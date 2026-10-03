@@ -103,11 +103,19 @@ def default_registry() -> MethodRegistry:
         MonitoringAudit,
         RobustnessEvaluation,
     )
+    from human_alignment.benchmarks import (
+        evaluate_alpacaeval_native,
+        evaluate_judgebench_with_judge,
+        evaluate_rewardbench2,
+    )
     from human_alignment.mechanisms.inference import (
+        ARGSDecoding,
         BestOfNSearch,
+        ContrastiveActivationAddition,
         HumanControl,
         InferenceSteering,
         IterativeRefinement,
+        RewardModelBestOfN,
     )
     from human_alignment.mechanisms.training import (
         BPO, IPO, TDPO, TIDPO, TISDPO, TBPOA, TBPOQ,
@@ -164,6 +172,12 @@ def default_registry() -> MethodRegistry:
         "inference_steering": InferenceSteering,
         "iterative_refinement": IterativeRefinement,
         "human_control": HumanControl,
+        "caa": ContrastiveActivationAddition,
+        "reward_best_of_n": RewardModelBestOfN,
+        "args": ARGSDecoding,
+        "rewardbench2": evaluate_rewardbench2,
+        "judgebench": evaluate_judgebench_with_judge,
+        "alpacaeval": evaluate_alpacaeval_native,
         "behavioral_evaluation": BehavioralEvaluation,
         "evaluator_reliability": EvaluatorReliability,
         "robustness_evaluation": RobustnessEvaluation,
@@ -230,6 +244,7 @@ def default_registry() -> MethodRegistry:
         "vpd": "distillation",
     }
     extras.update({method_id: "safety" for method_id in safety_factories})
+    extras.update({name: "inference" for name in ("caa", "reward_best_of_n", "args")})
     extras.update({name: "specification" for name in
                    ("vpl", "distributional_preference", "copr", "wdpo", "kldpo", "pad", "fpps")})
     registry = MethodRegistry()

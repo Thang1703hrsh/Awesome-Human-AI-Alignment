@@ -6,6 +6,11 @@
 
 ``trl``: port of TRL 0.8.x ``DPOTrainer.build_tokenized_answer`` + ``tokenize_row`` (decoder-only branch),
 used by SACPO, CAN, CPO, BFPO, MODPO: BOS + prompt, answer + EOS, prompt truncated (keep_end) then answer.
+
+``chat``: port of the BSO authors' SafeBPO ``preference_datasets.tokenize_batch_element`` for instruct models:
+the tokenizer's chat template renders ``[user]`` and ``[user, assistant]``; labels mask the rendered user turn
+(``add_generation_prompt=False``, so the assistant header is scored, as in the source). Pairs whose raw text contains
+EOS, or whose longer rendered sequence exceeds ``max_length``, are rejected (dropped, not truncated).
 """
 
 from __future__ import annotations
@@ -21,7 +26,7 @@ PROMPT_USER = "USER: {input} "
 PROMPT_ASSISTANT = "ASSISTANT:"
 SAFE_RLHF_PROMPT = PROMPT_BEGIN + PROMPT_USER + PROMPT_ASSISTANT
 
-TokenizationStyle = Literal["safe_rlhf", "trl"]
+TokenizationStyle = Literal["safe_rlhf", "trl", "chat"]
 
 
 def format_prompt(user_input: str, template: str = SAFE_RLHF_PROMPT) -> str:
@@ -100,6 +105,34 @@ def trl_encode_pair(
     return out
 
 
+def chat_encode_pair(
+    tokenizer, prompt: str, chosen: str, rejected: str, max_length: int
+) -> dict[str, list[int]]:
+    eos = tokenizer.eos_token_id
+    for text in (prompt, chosen, rejected):
+        if eos in tokenizer(text, add_special_tokens=False)["input_ids"]:
+            raise ValueError("EOS token inside the prompt or a response.")
+    user = [{"role": "user", "content": prompt}]
+
+    def render(messages):
+        text = tokenizer.apply_chat_template(
+            messages, add_generation_prompt=False, tokenize=False
+        )
+        return tokenizer(text, add_special_tokens=False)["input_ids"]
+
+    prompt_ids = render(user)
+    out = {}
+    for name, answer in (("chosen", chosen), ("rejected", rejected)):
+        ids = render(user + [{"role": "assistant", "content": answer}])
+        labels = list(ids)
+        labels[: len(prompt_ids)] = [IGNORE_INDEX] * min(len(prompt_ids), len(ids))
+        out[f"{name}_input_ids"] = ids
+        out[f"{name}_labels"] = labels
+    if max(len(out["chosen_input_ids"]), len(out["rejected_input_ids"])) > max_length:
+        raise ValueError(f"Pair longer than max_length={max_length} after the chat template.")
+    return out
+
+
 def encode_pair(
     tokenizer,
     pair: dict,
@@ -108,6 +141,11 @@ def encode_pair(
     max_prompt_length: int = 128,
     template: str = SAFE_RLHF_PROMPT,
 ) -> dict[str, list[int]]:
+    if style == "chat":
+        # The chat template replaces ``template``; ``max_prompt_length`` is unused, as in the source.
+        return chat_encode_pair(
+            tokenizer, pair["prompt"], pair["chosen"], pair["rejected"], max_length
+        )
     prompt = format_prompt(pair["prompt"], template)
     if style == "safe_rlhf":
         c = safe_rlhf_encode(tokenizer, prompt, pair["chosen"], max_length)

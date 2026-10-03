@@ -34,6 +34,10 @@ class PairwiseLossConfig:
     bso_lambda: float = 0.2
     bso_s: float = 4.0
     bso_penalty_inside_beta: bool = False
+    bso_mu: float = 1.5
+    bso_log_r_min: float | None = -30.0
+    bso_log_r_max: float | None = 30.0
+    bso_label_smoothing: float = 0.0
     # BFPO
     b1: float = 3.0
     alpha: float = 0.5
@@ -194,6 +198,10 @@ class PairwiseTrainer(Trainer):
                 cfg.bso_lambda,
                 cfg.bso_s,
                 cfg.bso_penalty_inside_beta,
+                mu=cfg.bso_mu,
+                log_r_min=cfg.bso_log_r_min,
+                log_r_max=cfg.bso_log_r_max,
+                label_smoothing=cfg.bso_label_smoothing,
             )
         elif cfg.loss == "bfpo":
             out = P.bfpo_loss(
@@ -235,6 +243,8 @@ class PairwiseTrainer(Trainer):
             .mean(),
             "rewards/margin": (out.chosen_rewards - out.rejected_rewards).mean(),
         }
+        for name, value in (out.diagnostics or {}).items():
+            metrics[name] = value.float().mean()
         return out.losses.mean(), metrics
 
     def _next_buffer_batch(self):

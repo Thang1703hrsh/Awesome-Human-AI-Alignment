@@ -92,6 +92,16 @@ PROFILES: dict[str, tuple[Resource, ...]] = {
     "midpo": (BASE_MODEL, UNIFIED_REWARD, UNIFIED_COST, PKU),
     "safedpo": (BASE_MODEL, PKU30K),
     "bso": (BASE_MODEL, PKU30K),
+    "bso_reference": (
+        Resource("Qwen/Qwen2.5-0.5B-Instruct", "model", "BSO authors' small policy"),
+        Resource(
+            "meta-llama/Llama-3.2-3B-Instruct", "model", "BSO authors' 3B policy", gated=True
+        ),
+        PKU30K,
+        UNIFIED_REWARD,
+        UNIFIED_COST,
+        Resource("Paul/XSTest", "dataset", "XSTest prompts used by the BSO over-refusal judge"),
+    ),
     "evaluation": (
         REWARD_MODEL,
         COST_MODEL,
@@ -135,6 +145,8 @@ ALIASES = {
     "midpo_safety_expert": "midpo",
     "midpo_helpfulness_expert": "midpo",
     "midpo_router": "midpo",
+    "bso_qwen2.5_0.5b": "bso_reference",
+    "bso_llama3.2_3b": "bso_reference",
 }
 
 

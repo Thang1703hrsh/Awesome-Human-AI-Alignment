@@ -122,6 +122,12 @@ def _safety(args: argparse.Namespace) -> int:
     return safety_main(args.safety_args)
 
 
+def _bench(args: argparse.Namespace) -> int:
+    from human_alignment.benchmarks.cli import main as bench_main
+
+    return bench_main(args.bench_args)
+
+
 def _prepare_feedback(args: argparse.Namespace) -> int:
     from pathlib import Path
     from human_alignment.supervision import PaperFeedbackDataset, prepare_dataset
@@ -223,6 +229,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     safety_parser.add_argument("safety_args", nargs=argparse.REMAINDER)
     safety_parser.set_defaults(handler=_safety)
+
+    bench_parser = commands.add_parser(
+        "bench", help="Run RewardBench 2, JudgeBench and AlpacaEval 2 under their official protocols"
+    )
+    bench_parser.add_argument("bench_args", nargs=argparse.REMAINDER)
+    bench_parser.set_defaults(handler=_bench)
     return parser
 
 

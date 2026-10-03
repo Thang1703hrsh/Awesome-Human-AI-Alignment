@@ -50,7 +50,7 @@ class SafetyAlignmentIntegrationTests(unittest.TestCase):
 
     def test_every_migrated_recipe_resolves_without_the_source_tree(self):
         recipes = sorted(RECIPES.glob("*.yaml"))
-        self.assertEqual(len(recipes), 27)
+        self.assertEqual(len(recipes), 29)
         for recipe in recipes:
             with self.subTest(recipe=recipe.name):
                 config = load_safety_config(recipe)

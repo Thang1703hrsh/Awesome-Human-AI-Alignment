@@ -81,6 +81,16 @@ run = VPD(model="student-model", dataset=data, output_dir="outputs/student-vpd")
 See [Preference distillation](./docs/PREFERENCE_DISTILLATION.md) for objective-specific
 dataset schemas, teacher-model use, and migration details.
 
+The benchmarks the survey uses as evidence (RewardBench 2, JudgeBench, AlpacaEval 2)
+run under their official scoring rules, and three inference-time methods (CAA,
+best-of-N with a reward model, ARGS) steer a frozen model:
+
+```bash
+hai-align bench rewardbench2 --reward-model Skywork/Skywork-Reward-V2-Qwen3-0.6B --output-dir eval/rb2
+```
+
+See [Benchmarks and inference-time methods](./docs/BENCHMARKS_AND_INFERENCE.md).
+
 Safety-alignment training is integrated under the same package, with 25 stages
 covering SafeRLHF, SafeDPO, BSO, SACPO, CAN, MODPO, CPO, BFPO, MidPO, reward and
 cost modeling, and multi-objective RLHF:
@@ -1037,7 +1047,7 @@ These surveys span several branches and are kept outside any single technical ca
 
 Contributions and bibliographic corrections are welcome:
 
-1. Add or update the complete record in [`human_ai_alignment_refs.bib`](./human_ai_alignment_refs.bib). Prefer the final venue page and DOI; use arXiv when no archival version is available.
+1. Include the paper's complete bibliographic record (authors, title, venue, year, and DOI or arXiv ID) in the pull request. Prefer the final venue page and DOI; use arXiv when no archival version is available.
 2. Add papers to every branch they substantively address; assignments do not need to be exclusive.
 3. Explain the proposed placement and include a stable public paper link in the pull request.
 

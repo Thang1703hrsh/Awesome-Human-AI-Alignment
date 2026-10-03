@@ -1,10 +1,11 @@
-# BSO (arXiv 2605.12339): SBA generator, C = 30, λ = 0.2, s = 4 (Table 2, Appendix D), swap/drop transform (§3.5).
-# β and optimiser settings are not reported -> SafeDPO Table 4 (same benchmark and baselines).
-# penalty_inside_beta=false follows Eq. 12/18 literally (log R = -(β h + C Δs)); see docs/safety_alignment/PORTING_PLAN.md.
+# BSO (arXiv 2605.12339) on the shared Alpaca-7B backbone, for controlled comparison with the SafeDPO family.
+# Loss settings follow the authors' SafeBPO code: SBA(λ = 0.2, s = 4), C = 30 outside β (log R = -(β h + C Δs)),
+# β = 0.1, swap/drop transform, log R clamped to [-30, 30]. Optimiser settings follow SafeDPO Table 4 (same benchmark).
+# The authors' own Qwen2.5-0.5B / Llama-3.2-3B runs are bso_qwen2.5_0.5b.yaml and bso_llama3.2_3b.yaml.
 base: _pku_dpo_base.yaml
 method: bso
 data: {selection: safedpo}
 train: {output_dir: output/bso}
 method_args: {beta: 0.1, safety_penalty: 30.0, bso_generator: sba, bso_lambda: 0.2, bso_s: 4.0,
-              bso_penalty_inside_beta: false}
+              bso_log_r_min: -30.0, bso_log_r_max: 30.0, bso_penalty_inside_beta: false}
 

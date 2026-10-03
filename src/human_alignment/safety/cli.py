@@ -58,6 +58,12 @@ def main(argv: list[str] | None = None) -> int:
     generate.add_argument("--top-p", type=float, default=1.0)
     generate.add_argument("--seed", type=int, default=42)
     generate.add_argument("--dtype", choices=("bf16", "fp16", "fp32"), default="bf16")
+    generate.add_argument(
+        "--keep-column",
+        action="append",
+        default=[],
+        help="copy a dataset column into each output row (repeatable), e.g. --keep-column label",
+    )
     score = sub.add_parser(
         "score", help="score generated JSONL with Beaver reward and cost models"
     )
@@ -83,6 +89,34 @@ def main(argv: list[str] | None = None) -> int:
         "--model", required=True, help="judge model available through the OpenAI API"
     )
     judge.add_argument("--seed", type=int, default=42)
+    for name, help_text in (
+        ("xstest-judge", "XSTest over-refusal / harmlessness LLM judge (BSO authors' protocol)"),
+        ("rubric-judge", "pointwise helpfulness score and safe/unsafe label LLM judge"),
+    ):
+        p = sub.add_parser(name, help=help_text)
+        p.add_argument("generations", help="generation JSONL from `generate`")
+        p.add_argument("--output-dir", required=True)
+        p.add_argument("--provider", choices=("deepseek", "nvidia", "openai"), default="deepseek")
+        p.add_argument("--model", help="judge model (default: the provider preset)")
+        p.add_argument("--base-url", help="override the provider's OpenAI-compatible endpoint")
+        p.add_argument(
+            "--api-keys",
+            help="comma-separated keys used round-robin (prefer JUDGE_API_KEYS or the provider variable)",
+        )
+        p.add_argument("--workers", type=int, default=8)
+        p.add_argument(
+            "--exclude-unparsed",
+            action="store_true",
+            help="drop unparseable judgments from the means instead of scoring them 0 as the source does",
+        )
+        if name == "xstest-judge":
+            p.add_argument("--label-column", default="label")
+            p.add_argument("--max-per-split", type=int, help="judge at most N safe and N unsafe rows")
+        else:
+            p.add_argument("--mode", choices=("helpfulness", "safety", "both"), default="both")
+            p.add_argument("--temperature", type=float, default=0.7)
+            p.add_argument("--max-samples", type=int)
+            p.add_argument("--seed", type=int, default=42)
     args = parser.parse_args(argv)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
@@ -118,6 +152,7 @@ def main(argv: list[str] | None = None) -> int:
             args.dataset_config,
             args.prompt_column,
             args.limit,
+            args.keep_column,
         )
         print(
             generate_rows(
@@ -165,6 +200,34 @@ def main(argv: list[str] | None = None) -> int:
                 indent=2,
             )
         )
+        return 0
+    if args.cmd in ("xstest-judge", "rubric-judge"):
+        import json
+        from human_alignment.safety.eval.rubric_judge import judge_file as rubric_judge_file
+
+        common = dict(
+            provider=args.provider,
+            model=args.model,
+            api_keys=args.api_keys,
+            base_url=args.base_url,
+            workers=args.workers,
+            exclude_unparsed=args.exclude_unparsed,
+        )
+        if args.cmd == "xstest-judge":
+            options = dict(label_column=args.label_column, max_per_split=args.max_per_split)
+            protocol = "xstest"
+        else:
+            options = dict(
+                mode=args.mode,
+                temperature=args.temperature,
+                max_samples=args.max_samples,
+                seed=args.seed,
+            )
+            protocol = "rubric"
+        summary = rubric_judge_file(
+            protocol, args.generations, args.output_dir, **common, **options
+        )
+        print(json.dumps(summary, indent=2))
         return 0
     cfg = load_config(args.config, args.overrides)
     if args.cmd == "show":

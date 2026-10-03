@@ -13,7 +13,7 @@ from typing import Iterable, Iterator, Literal
 import torch
 
 Pair = dict
-PairSelection = Literal["better", "safer", "safe_better", "safedpo"]
+PairSelection = Literal["better", "safer", "safe_better", "safedpo", "drop_both_unsafe"]
 
 
 def select_pair(row: dict, by: Literal["better", "safer"]) -> Pair:
@@ -53,6 +53,9 @@ def build_pairs(rows: Iterable[dict], selection: PairSelection) -> Iterator[Pair
     safe_better  DPO-SafeBetter: ``better`` pairs, dropping those whose preferred response is unsafe
                  (SafeDPO paper §5.1 definition)
     safedpo      SafeDPO / BSO: ``better`` pairs passed through T(D)
+    drop_both_unsafe
+                 BSO without the swap (SafeBPO ``flip_unsafe_chosen: false``): ``better`` pairs, dropping those whose
+                 responses are both unsafe; an unsafe-chosen/safe-rejected pair is kept as is (Δs = +1)
     """
     for row in rows:
         if selection in ("better", "safer"):
@@ -64,6 +67,10 @@ def build_pairs(rows: Iterable[dict], selection: PairSelection) -> Iterator[Pair
         elif selection == "safedpo":
             pair = safedpo_transform(select_pair(row, "better"))
             if pair is not None:
+                yield pair
+        elif selection == "drop_both_unsafe":
+            pair = select_pair(row, "better")
+            if pair["chosen_safe"] or pair["rejected_safe"]:
                 yield pair
         else:
             raise ValueError(f"Unknown pair selection {selection!r}")

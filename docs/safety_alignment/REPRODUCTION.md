@@ -58,12 +58,24 @@ WEIGHTS="0.3 0.7" scripts/safety_alignment/run/run_morlhf.sh
 | BFPO | Mistral-7B/Zephyr; UltraChat, UltraFeedback, PKU | `bfpo.yaml` | lm-eval helpfulness suite + generative/discriminative safety |
 | MidPO | Alpaca-7B; PKU-SafeRLHF | `midpo_*` | PKU, Do-Not-Answer, WildGuardMix; RM and LLM scores |
 | SafeDPO | Alpaca-7B; PKU-SafeRLHF-30K | `safedpo.yaml` | unified RM/CM, GPT judge, XSTest over-refusal |
-| BSO | Qwen2.5-0.5B and Llama-3.2-3B; PKU-30K | `bso.yaml` | unified RM/CM; optional LLM judge |
+| BSO | Qwen2.5-0.5B and Llama-3.2-3B; PKU-30K | `bso_qwen2.5_0.5b.yaml`, `bso_llama3.2_3b.yaml` (authors' runs); `bso.yaml` (shared backbone) | unified RM/CM; XSTest over-refusal and pointwise LLM judges |
 | MORLHF | Llama-2-7B; HH-RLHF + GPT-2 reward models | `morlhf.yaml` | per-objective rewards over preference weights |
 
-The unified recipes intentionally keep one common Alpaca-7B backbone for controlled comparison. To reproduce BSO's
-backbone study, override `model.policy` with `Qwen/Qwen2.5-0.5B-Instruct` or
-`meta-llama/Llama-3.2-3B-Instruct`. RiC/MORLHF's original HH-RLHF setting is documented but the default recipe uses
+The unified recipes intentionally keep one common Alpaca-7B backbone for controlled comparison. BSO's own runs are
+reproduced from the authors' code rather than by overriding the backbone, because they also change tokenization
+(chat template, pairs over 2048 tokens dropped), optimiser (RMSprop, lr 1e-6 / 7e-7, global batch 16, grad-clip 10)
+and precision (fp32 policy, fp16 reference):
+
+```bash
+hai-align safety prepare bso_reference                       # Qwen2.5-0.5B, Llama-3.2-3B (gated), PKU-30K, scorers, XSTest
+bash scripts/safety_alignment/examples/bso_reference.sh qwen  # train + PKU reward/cost + XSTest (judge if a key is set)
+bash scripts/safety_alignment/examples/bso_reference.sh llama 30 0.3
+```
+
+Known differences from the source: HF `Trainer` shuffles pairs per epoch, whereas the source groups pairs by prompt
+before shuffling; HF rounds the 5% warmup up rather than down; `generate` strips leading/trailing whitespace from
+responses before scoring. The source trains with the chat template but evaluates with the safe-rlhf
+`BEGINNING OF CONVERSATION:` template; the script reproduces that choice. RiC/MORLHF's original HH-RLHF setting is documented but the default recipe uses
 PKU prompts and Beaver reward/negative-cost to remain a safety-alignment comparison.
 
 ## 4. Test levels

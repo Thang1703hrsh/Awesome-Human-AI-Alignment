@@ -201,12 +201,18 @@ scripts/safety_alignment/run/run_safedpo.sh method_args.delta=5 train.output_dir
 ### 5. Run Bregman Safety Optimization
 
 ```bash
-scripts/safety_alignment/run/run_bso.sh
+scripts/safety_alignment/run/run_bso.sh            # shared Alpaca-7B backbone (bso.yaml)
+scripts/safety_alignment/run/run_bso.sh qwen       # authors' Qwen2.5-0.5B-Instruct run
+scripts/safety_alignment/run/run_bso.sh llama      # authors' Llama-3.2-3B-Instruct run
+bash scripts/safety_alignment/examples/bso_reference.sh qwen   # train + full authors' evaluation
 ```
 
-Recipe: `recipes/safety_alignment/methods/bso.yaml`
-Default generator: shifted-Bregman (`sba`)
-Default paper parameters: `C=30`, `lambda=0.2`, `s=4`
+Recipes: `bso.yaml`, `bso_qwen2.5_0.5b.yaml`, `bso_llama3.2_3b.yaml` in `recipes/safety_alignment/methods/`
+Default generator: scaled Basu power divergence (`sba`); also `phi_mu`, `ba`, `kliep`, `lsif`, `logistic`
+Default parameters (authors' code): `C=30` outside β, `lambda=0.2` (0.3 for Llama), `s=4`, `beta=0.1`,
+log R clamped to [−30, 30] (`bso_log_r_min`/`bso_log_r_max`), swap/drop transform (`data.selection: safedpo`;
+`drop_both_unsafe` keeps unsafe-chosen pairs unswapped). Training logs `bso/log_r`, `bso/frac_clamped`,
+`bso/frac_log_r_gt_0` and `bso/safety_delta`.
 
 ### 6. Run SafeRLHF / PPO-Lagrangian
 
@@ -362,7 +368,7 @@ Outputs: `output/midpo/safety_expert`, `output/midpo/helpfulness_expert`, and `o
 | Reward / cost | `hai-align safety prepare reward_cost` | `scripts/safety_alignment/run/run_reward_cost.sh` | `recipes/safety_alignment/methods/reward_model.yaml`, `recipes/safety_alignment/methods/cost_model.yaml` |
 | DPO baselines | `hai-align safety prepare dpo` | `scripts/safety_alignment/run/run_dpo.sh` | `recipes/safety_alignment/methods/dpo_*.yaml` |
 | SafeDPO | `hai-align safety prepare safedpo` | `scripts/safety_alignment/run/run_safedpo.sh` | `recipes/safety_alignment/methods/safedpo.yaml` |
-| BSO | `hai-align safety prepare bso` | `scripts/safety_alignment/run/run_bso.sh` | `recipes/safety_alignment/methods/bso.yaml` |
+| BSO | `hai-align safety prepare bso` (`bso_reference` for the authors' runs) | `scripts/safety_alignment/run/run_bso.sh [qwen\|llama]` | `bso.yaml`, `bso_qwen2.5_0.5b.yaml`, `bso_llama3.2_3b.yaml` |
 | SafeRLHF | `hai-align safety prepare saferlhf` | `scripts/safety_alignment/run/run_saferlhf.sh` | `recipes/safety_alignment/methods/saferlhf.yaml` |
 | PPO | `hai-align safety prepare ppo` | `scripts/safety_alignment/run/run_ppo.sh` | `recipes/safety_alignment/methods/ppo.yaml` |
 | MORLHF | `hai-align safety prepare morlhf` | `scripts/safety_alignment/run/run_morlhf.sh` | `recipes/safety_alignment/methods/morlhf.yaml` |

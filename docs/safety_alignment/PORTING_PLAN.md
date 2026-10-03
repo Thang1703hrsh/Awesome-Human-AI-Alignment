@@ -37,11 +37,12 @@
 | Log-softmax | model dtype (bf16 under DeepSpeed) | fp32 upcast of bf16 logits | numerical precision only |
 
 ## Open questions (no reference code, or the reference is ambiguous)
-1. **BSO scale of C.** Eq. 12/18 put C outside β (`log R = −(βh + CΔs)`). `tests/test_paper_only_theory.py` shows
-   this literal form is the one whose minimiser is the paper's own optimum Eq. 8, π ∝ π_ref exp((r − C s)/β)
-   (C in reward units); `bso_penalty_inside_beta: true` would instead target exp((r − βC s)/β). With the reported
-   C = 30 the safe-winner pairs get R ≈ e^30 — consistent with the paper's "large C" discussion. β, lr and batch
-   are not reported → SafeDPO Table 4.
+1. **BSO scale of C — resolved.** The authors' SafeBPO code computes `log R_safe = β(h_l − h_w) − C(s_w − s_l)`, i.e.
+   C outside β as in Eq. 12/18, so `bso_penalty_inside_beta: false` is the reference behaviour (the flag remains for
+   ablations). The code also clamps log R to [−30, 30] before ℓ_h; with C = 30 a safe-winner pair starts exactly on
+   the bound and its gradient is zero whenever β·h < 0, which is why the authors' scripts raise the upper bound to
+   min(C + 10, ⌊85/(1+λ)⌋) for C > 30. Their own runs (Qwen2.5-0.5B, Llama-3.2-3B) are `bso_qwen2.5_0.5b.yaml` and
+   `bso_llama3.2_3b.yaml`; `bso.yaml` keeps the shared Alpaca-7B backbone with SafeDPO Table 4 optimiser settings.
 2. **MidPO safety score model** is `/root/.../safety-reward-eval` in the repo. The sign convention of the two expert
    losses implies a cost-like score, so the config uses `beaver-7b-unified-cost`.
 3. **MidPO / SafeDPO GPU count** is not stated; configs assume 8 GPUs for the global batch.

@@ -109,8 +109,18 @@ def load_tokenizer(cfg: ExperimentConfig, path: str | None = None):
     tok = AutoTokenizer.from_pretrained(
         path or cfg.model.policy, model_max_length=cfg.data.max_length
     )
-    add_missing_special_tokens(tok)
+    if _keeps_native_vocabulary(cfg):
+        if tok.pad_token_id is None:
+            tok.pad_token = tok.eos_token
+    else:
+        add_missing_special_tokens(tok)
     return tok
+
+
+def _keeps_native_vocabulary(cfg) -> bool:
+    """Chat-template recipes (BSO authors' code) reuse EOS as padding and never resize embeddings; the safe-rlhf
+    convention instead adds missing pad/bos/eos/unk tokens and resizes, which would alter instruct checkpoints."""
+    return cfg.data.tokenization == "chat"
 
 
 def _uses_deepspeed(cfg) -> bool:
@@ -138,7 +148,8 @@ def load_policy(cfg: ExperimentConfig, tokenizer, path: str | None = None):
     model = AutoModelForCausalLM.from_pretrained(
         path, dtype=dtype, attn_implementation=cfg.model.attn_implementation
     )
-    add_missing_special_tokens(tokenizer, model)
+    if not _keeps_native_vocabulary(cfg):
+        add_missing_special_tokens(tokenizer, model)
     model.config.use_cache = False
     if cfg.model.lora is not None:
         from peft import LoraConfig, get_peft_model
@@ -182,7 +193,8 @@ def load_ref(cfg: ExperimentConfig, tokenizer):
         dtype=_dtype(cfg.model.dtype),
         attn_implementation=cfg.model.attn_implementation,
     )
-    add_missing_special_tokens(tokenizer, ref)
+    if not _keeps_native_vocabulary(cfg):
+        add_missing_special_tokens(tokenizer, ref)
     ref.config.use_cache = False
     return ref
 
@@ -230,8 +242,20 @@ def _pair_dataset(cfg, tokenizer, pairs: list[dict]) -> Dataset:
         except ValueError:
             skipped += 1
     if skipped:
-        log.warning("skipped %d pairs whose responses tokenize identically", skipped)
+        log.warning(
+            "skipped %d pairs (identical tokenization, or for `chat` tokenization: EOS inside the text "
+            "or longer than max_length)",
+            skipped,
+        )
     return Dataset.from_list(feats)
+
+
+def _require_template_tokenization(cfg) -> None:
+    """SFT/KTO-style runners format prompts with ``data.template`` only; ``chat`` is a pairwise convention."""
+    if cfg.data.tokenization == "chat":
+        raise ValueError(
+            f"data.tokenization=chat is only supported by pairwise methods, not {cfg.method!r}"
+        )
 
 
 def _finish(cfg, trainer, tokenizer, extra: dict | None = None):
@@ -253,6 +277,7 @@ def run_sft(cfg: ExperimentConfig):
         sft_features_safe_rlhf,
     )
 
+    _require_template_tokenization(cfg)
     tok = load_tokenizer(cfg)
     if cfg.data.source == "alpaca":
         rows = S.load_alpaca(
@@ -548,7 +573,7 @@ def run_pairwise(cfg: ExperimentConfig):
     }
     loss_cfg = PairwiseLossConfig(
         loss=LOSS_FOR_METHOD[cfg.method],
-        logp_mode="masked" if cfg.data.tokenization == "trl" else "safe_rlhf",
+        logp_mode="safe_rlhf" if cfg.data.tokenization == "safe_rlhf" else "masked",
         **margs,
     )
     if cfg.method.startswith("midpo_"):
@@ -601,6 +626,7 @@ def run_kto(cfg: ExperimentConfig):
         kto_rows,
     )
 
+    _require_template_tokenization(cfg)
     tok = load_tokenizer(cfg)
     rows = kto_rows(_pku_rows(cfg), cfg.method_args.get("label_by", "safe"))
     dw, uw = class_weights(rows)

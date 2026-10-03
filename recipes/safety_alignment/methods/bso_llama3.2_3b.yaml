@@ -1,0 +1,14 @@
+# BSO / SafeBPO-SBA on Llama-3.2-3B-Instruct, reproducing the authors' `script/train/bpo_safety_llama_3B_sba_flip.sh`
+# (SafeBPO code, branch `flip`). Same as bso_qwen2.5_0.5b.yaml except λ = 0.3 and lr 7e-7; the source also runs
+# global batch 16 (micro-batch 8 x GA 2), here 4 x GA 4 to fit an fp32 3B policy with RMSprop on one 80 GB GPU.
+# Llama-3.2 is gated on Hugging Face (accept the licence and set HF_TOKEN).
+base: bso_qwen2.5_0.5b.yaml
+model:
+  policy: meta-llama/Llama-3.2-3B-Instruct
+train:
+  output_dir: output/bso_llama3.2_3b
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4         # 4 x 4 = 16
+  learning_rate: 7.0e-7
+method_args:
+  bso_lambda: 0.3

@@ -1,14 +1,15 @@
-# Local publication helpers (the rendered taxonomy assets stay versioned).
-/Figure/Taxonomy.tex
+# Paper sources stay local; the rendered figures in Figure/ stay versioned.
+*.tex
+*.sty
+*.bst
+*.cls
+/human_ai_alignment_refs.bib
 /Figure/convert.py
-/taxonomy_full_mapping.tex
 /taxonomy_mapping.md
-/taxonomy.tex
-/main.tex
 
 # Local-only project files (not published on GitHub)
 /modal_smoke/
-/Survey.tex
+/safebpo-2/
 
 # Unreferenced local source material and image drafts
 /2026.acl-long.pdf
@@ -108,4 +109,3 @@ pytorch_model*.bin
 .DS_Store
 Thumbs.db
 Desktop.ini
-human_ai_alignment_refs.bib

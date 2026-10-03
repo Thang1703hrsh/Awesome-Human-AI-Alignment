@@ -96,10 +96,13 @@ mechanisms/
 │   ├── distillation.py
 │   └── distillation_losses.py
 └── inference/
+    ├── activation_steering.py   # CAA (native)
+    ├── reward_guided.py         # best-of-N with a reward model, ARGS (native)
     ├── steering.py
     ├── search.py
     ├── refinement.py
     └── control.py
+benchmarks/                      # RewardBench 2, JudgeBench, AlpacaEval 2 (official scoring)
 ```
 
 The folders make taxonomy placement discoverable to contributors, while
@@ -124,6 +127,11 @@ public method -> dataset normalization -> optional integration -> AlignmentRun
 - `safety/` contains the migrated safety-alignment losses, data builders,
   trainers, evaluators, resource manifest, and recipe runner. Its ML imports
   remain lazy, and `mechanisms/training/safety.py` adapts runs to `AlignmentRun`.
+- `benchmarks/` holds dependency-free scoring that follows each benchmark's
+  official code, lazy Hub loaders, and the `hai-align bench` CLI;
+  `integrations/reward_model.py` is the shared reward-model scorer used by the
+  evaluators and by reward-guided inference. See
+  [Benchmarks and inference-time methods](BENCHMARKS_AND_INFERENCE.md).
 - `integrations/distillation_data.py` executes teacher/student models to prepare
   their method-specific supervision.
 - `integrations/transformers.py` owns model loading and basic generation.

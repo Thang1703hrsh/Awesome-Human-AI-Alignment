@@ -1,0 +1,43 @@
+# BSO / SafeBPO-SBA on Qwen2.5-0.5B-Instruct, reproducing the authors' `script/train/bpo_safety_0_5B_sba_flip.sh`
+# (SafeBPO code, branch `flip`): SBA(λ = 0.2, s = 4), C = 30, β = 0.1, swap/drop transform, log R clamped to [-30, 30].
+# Training: full fine-tuning, global batch 16 (here 8 x GA 2), RMSprop, lr 1e-6, cosine with 5% warmup, 3 epochs,
+# grad-clip 10, seed 0, chat-template tokenization with pairs longer than 2048 tokens dropped. The source keeps an
+# fp32 policy without autocast and an fp16 frozen reference, hence `bf16: false` and `dtype: fp16` (reference only).
+# C > 30: raise `bso_log_r_max` to min(C + 10, floor(85 / (1 + λ))), as the source script does.
+# SafeBPO.yaml defaults instead: bso_generator=phi_mu bso_mu=1.5 safety_penalty=5 data.selection=drop_both_unsafe.
+method: bso
+model:
+  policy: Qwen/Qwen2.5-0.5B-Instruct
+  dtype: fp16
+data:
+  source: pku
+  dataset: PKU-Alignment/PKU-SafeRLHF-30K
+  train_split: train
+  selection: safedpo
+  tokenization: chat
+  max_length: 2048
+train:
+  output_dir: output/bso_qwen2.5_0.5b
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  gradient_accumulation_steps: 2         # 8 x 2 = 16
+  learning_rate: 1.0e-6
+  optim: rmsprop
+  weight_decay: 0.0
+  lr_scheduler_type: cosine
+  warmup_steps: 0.05  # fraction of total steps
+  max_grad_norm: 10.0
+  bf16: false
+  gradient_checkpointing: true
+  seed: 0
+  logging_steps: 10
+method_args:
+  beta: 0.1
+  safety_penalty: 30.0
+  bso_generator: sba
+  bso_lambda: 0.2
+  bso_s: 4.0
+  bso_log_r_min: -30.0
+  bso_log_r_max: 30.0
+  bso_label_smoothing: 0.0
+  bso_penalty_inside_beta: false
