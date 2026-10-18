@@ -189,5 +189,102 @@ class PreferenceDistillationLossTests(unittest.TestCase):
         self.assertIsNotNone(rejected.grad)
 
 
+class PADFilterTests(unittest.TestCase):
+    def test_confidence_filter_keeps_rows_with_mixed_selection(self):
+        from math import log
+
+        from human_alignment.integrations.preference_distillation import (
+            _filter_mcq_confidence,
+        )
+
+        rows = [
+            {"scores_mcq": [log(0.9), log(0.2)]},
+            {"scores_mcq": [log(0.9), log(0.8)]},
+            {"scores_mcq": [log(0.5), log(0.4)]},
+            {"scores_mcq": [log(0.51), log(0.5)]},
+        ]
+        self.assertEqual(_filter_mcq_confidence(rows), [rows[0], rows[3]])
+        with self.assertRaises(DatasetFormatError):
+            _filter_mcq_confidence([{"teacher_scores": [0.0, 1.0]}])
+
+    def test_confidence_filter_is_limited_to_pad_objectives(self):
+        PreferenceDistillationConfig(objective="ppd", mcq_confidence_filter=True)
+        with self.assertRaises(ConfigurationError):
+            PreferenceDistillationConfig(objective="adpa", mcq_confidence_filter=True)
+
+
+class _MCQTokenizer:
+    """Tokenizer stub whose model reads the most recent MCQ query."""
+
+    vocab = ["A", " A", "B", "None", "zz"]
+    bos_token = None
+
+    def __init__(self):
+        self.last_query = ""
+
+    def apply_chat_template(self, messages, tokenize, add_generation_prompt):
+        return "".join(f"<{m['role']}>{m['content']}" for m in messages) + "<assistant>"
+
+    def encode(self, text, add_special_tokens=False):
+        return [4] * len(text.split())
+
+    def decode(self, ids):
+        if isinstance(ids, int):
+            return self.vocab[ids]
+        return " ".join("zz" for _ in ids)
+
+    def __call__(self, text, add_special_tokens=False, return_tensors=None):
+        import torch
+
+        self.last_query = text
+        return {"input_ids": torch.zeros((1, 1), dtype=torch.long)}
+
+
+class _MCQModel:
+    """Prefers whichever option contains the word 'good'."""
+
+    def __init__(self, tokenizer):
+        self.tokenizer = tokenizer
+
+    def __call__(self, input_ids, use_cache=False):
+        import torch
+
+        query = self.tokenizer.last_query
+        option_a = query.split('A) """', 1)[1].split('"""', 1)[0]
+        option_b = query.split('B) """', 1)[1].split('"""', 1)[0]
+        if ("good" in option_a) == ("good" in option_b):
+            p_a = p_b = 0.4
+        else:
+            p_a, p_b = (0.7, 0.2) if "good" in option_a else (0.2, 0.7)
+        probabilities = [p_a / 2, p_a / 2, p_b, 0.0, 1.0 - p_a - p_b]
+        logits = torch.tensor(probabilities).clamp_min(1e-12).log()
+        return type("Output", (), {"logits": logits.view(1, 1, -1)})()
+
+
+@unittest.skipUnless(TORCH_AVAILABLE, "PyTorch is required for PAD MCQ scoring")
+class PADMCQScoringTests(unittest.TestCase):
+    def test_scores_follow_reference_pairwise_aggregation(self):
+        import torch
+
+        from human_alignment.integrations.distillation_data import _pad_mcq_scores
+
+        tokenizer = _MCQTokenizer()
+        scores = _pad_mcq_scores(
+            _MCQModel(tokenizer), tokenizer, "Question?", ["good", "bad", "good"], torch
+        )
+        eps = 1e-8
+        # Pairs (0,1), (0,2), (1,2) with A as the first index; every pair adds eps per side.
+        totals = [eps + (eps + 0.7) + (eps + 0.4), eps + (eps + 0.2) + (eps + 0.2),
+                  eps + (eps + 0.4) + (eps + 0.7)]
+        from math import log
+
+        expected = [log(total / 2) for total in totals]
+        for value, reference in zip(scores, expected):
+            self.assertAlmostEqual(value, reference, places=6)
+        self.assertIn("Output only the identifier of the best response (A, or B).",
+                      tokenizer.last_query)
+        self.assertIn("### Query\nQuestion?", tokenizer.last_query)
+
+
 if __name__ == "__main__":
     unittest.main()

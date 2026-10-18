@@ -9,6 +9,8 @@ from typing import Any, Literal, Mapping
 from human_alignment.config import DistillationObjective, PreferenceDistillationConfig
 from human_alignment.exceptions import ConfigurationError
 
+TeacherScoreMode = Literal["sequence_logprob", "pairwise", "pad_mcq"]
+
 
 @dataclass(frozen=True)
 class DistillationPreparationConfig:
@@ -17,7 +19,7 @@ class DistillationPreparationConfig:
     split: str | None = None
     top_k: int = 50
     num_responses: int = 4
-    teacher_score_mode: Literal["sequence_logprob", "pairwise"] = "sequence_logprob"
+    teacher_score_mode: TeacherScoreMode = "sequence_logprob"
     generation_backend: Literal["transformers", "vllm"] = "transformers"
     model_kwargs: Mapping[str, Any] = field(default_factory=dict)
     generation_kwargs: Mapping[str, Any] = field(default_factory=dict)
@@ -29,7 +31,7 @@ class DistillationPreparationConfig:
             raise ConfigurationError("num_responses must be at least two")
         if not self.output_dir:
             raise ConfigurationError("output_dir is required")
-        if self.teacher_score_mode not in {"sequence_logprob", "pairwise"}:
+        if self.teacher_score_mode not in {"sequence_logprob", "pairwise", "pad_mcq"}:
             raise ConfigurationError("Unknown teacher_score_mode")
         if self.generation_backend not in {"transformers", "vllm"}:
             raise ConfigurationError("Unknown generation_backend")
@@ -54,7 +56,7 @@ def prepare_preference_distillation_dataset(
     split: str | None = None,
     top_k: int = 50,
     num_responses: int = 4,
-    teacher_score_mode: Literal["sequence_logprob", "pairwise"] = "sequence_logprob",
+    teacher_score_mode: TeacherScoreMode = "sequence_logprob",
     generation_backend: Literal["transformers", "vllm"] = "transformers",
     model_kwargs: Mapping[str, Any] | None = None,
     generation_kwargs: Mapping[str, Any] | None = None,

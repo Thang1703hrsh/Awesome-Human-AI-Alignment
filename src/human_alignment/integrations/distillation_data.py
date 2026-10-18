@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from itertools import combinations
-from math import log
+from math import exp, log
 from pathlib import Path
+from string import Template
 from typing import Any, Mapping, Sequence
 
 from human_alignment.config import PreferenceDistillationConfig
@@ -164,6 +165,126 @@ def _pairwise_scores(
             counts[first] += 1
             counts[second] += 1
     return [log(max(total / max(count, 1), 1e-8)) for total, count in zip(totals, counts)]
+
+
+# PAD (Gu et al., 2025) teacher calibration, ported from the authors'
+# data_gen/gen/mcq-template.json and data_gen/gen/prob.py (github.com/EganGu/PAD).
+_PAD_MCQ_SYSTEM = (
+    "You are a helpful assistant, that evaluates the following responses to the given query "
+    "and choose the best one based on relevance, accuracy, completeness, coherence, and "
+    "clarity.\nOutput only the identifier of the best response $identifier_list_str. If none "
+    "of the responses meet these criteria, or if the responses are too similar to "
+    "distinguish, Output \"None\"."
+)
+_PAD_MCQ_USER = (
+    "### Query\n$instruction\n\n### Candidate Responses\n$candidate_response_list_str\n\n"
+    "### Output\nThe identifier of the best response:"
+)
+_PAD_RESPONSE_TOKEN_LIMIT = 2500
+_PAD_TOP_LOGPROBS = 20
+_PAD_EPSILON = 1e-8
+
+
+def _instruction_text(prompt_value: Any) -> str:
+    if _is_messages(prompt_value):
+        user_turns = [turn for turn in prompt_value if turn["role"] == "user"]
+        if not user_turns:
+            raise ConfigurationError("PAD MCQ scoring requires a user turn in the prompt")
+        return str(user_turns[-1]["content"])
+    return str(prompt_value)
+
+
+def _pad_mcq_template(tokenizer: Any) -> Template:
+    from jinja2.exceptions import TemplateError
+
+    try:
+        text = tokenizer.apply_chat_template(
+            [
+                {"role": "system", "content": _PAD_MCQ_SYSTEM},
+                {"role": "user", "content": _PAD_MCQ_USER},
+            ],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+    except TemplateError:
+        # Chat templates without a system role (e.g. Gemma) receive one merged user turn.
+        text = tokenizer.apply_chat_template(
+            [{"role": "user", "content": f"{_PAD_MCQ_SYSTEM}\n\n{_PAD_MCQ_USER}"}],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+    return Template(text)
+
+
+def _pad_truncate(text: str, tokenizer: Any) -> str:
+    ids = tokenizer.encode(text, add_special_tokens=False)
+    if len(ids) > _PAD_RESPONSE_TOKEN_LIMIT:
+        return tokenizer.decode(ids[:_PAD_RESPONSE_TOKEN_LIMIT]) + "..."
+    return text
+
+
+def _pad_mcq_scores(
+    model: Any,
+    tokenizer: Any,
+    instruction: str,
+    responses: Sequence[str],
+    torch: Any,
+) -> list[float]:
+    """Return PAD's ``scores_mcq``: log of the mean pairwise selection probability.
+
+    Every unordered pair is shown once as options A and B. An option's probability
+    sums the top-20 next-token probabilities whose decoded token contains its letter
+    and is shorter than three characters, as in the reference ``stat_prob``. The
+    reference samples at temperature 1, so raw logits are used here.
+    """
+
+    if len(responses) < 2:
+        raise ConfigurationError("PAD MCQ scoring requires at least two responses")
+    template = _pad_mcq_template(tokenizer)
+    candidates = [_pad_truncate(response, tokenizer) for response in responses]
+    bos_token = getattr(tokenizer, "bos_token", None)
+    device = _device(model)
+    totals = [_PAD_EPSILON] * len(candidates)
+    for left, right in combinations(range(len(candidates)), 2):
+        options = "\n".join(
+            f'{letter}) """\n{candidates[index]}\n"""'
+            for letter, index in (("A", left), ("B", right))
+        )
+        query = template.safe_substitute(
+            identifier_list_str="(A, or B)",
+            instruction=instruction,
+            candidate_response_list_str=options,
+        )
+        if bos_token and not query.startswith(bos_token):
+            query = bos_token + query
+        # The query already carries the BOS token, so none is added during encoding.
+        encoded = tokenizer(query, add_special_tokens=False, return_tensors="pt")
+        if device:
+            encoded = {key: value.to(device) for key, value in encoded.items()}
+        with torch.no_grad():
+            logits = model(**encoded, use_cache=False).logits[0, -1].float()
+        top_logps, top_ids = logits.log_softmax(-1).topk(
+            min(_PAD_TOP_LOGPROBS, logits.shape[-1])
+        )
+        selected = {"A": _PAD_EPSILON, "B": _PAD_EPSILON}
+        for token_logp, token_id in zip(top_logps.tolist(), top_ids.tolist()):
+            token = tokenizer.decode(int(token_id))
+            for letter in selected:
+                if letter in token and len(token) < 3:
+                    selected[letter] += exp(token_logp)
+        totals[left] += selected["A"]
+        totals[right] += selected["B"]
+    return [log(total / (len(candidates) - 1)) for total in totals]
+
+
+def _teacher_prompt(tokenizer: Any, prompt_value: Any) -> str:
+    if _is_messages(prompt_value):
+        return _apply_messages(tokenizer, prompt_value, generate=True)
+    if getattr(tokenizer, "chat_template", None):
+        return _apply_messages(
+            tokenizer, [{"role": "user", "content": str(prompt_value)}], generate=True
+        )
+    return str(prompt_value)
 
 
 def _generate_responses(
@@ -377,6 +498,9 @@ class DistillationDataBackend:
                     normalized = _normalize_row(raw, student_tokenizer, config)
                     prompt = normalized["prompt"]
                     responses = normalized["responses"]
+                    prompt_value = raw.get("prompt")
+                    if prompt_value is None and "chosen" in raw:
+                        prompt_value = list(raw["chosen"][:-1])
                 record = dict(raw)
                 if objective in {"vpd", "ppd"}:
                     if generation_engine is not None:
@@ -397,22 +521,51 @@ class DistillationDataBackend:
                         )
                     if teacher is None:
                         raise ConfigurationError("VPD/PPD preparation requires teacher_model")
-                    if teacher_score_mode == "pairwise":
-                        scores = _pairwise_scores(
-                            teacher, teacher_tokenizer, prompt, responses, torch
-                        )
-                    elif teacher_score_mode == "sequence_logprob":
-                        scores = [
-                            _sequence_score(
-                                teacher, teacher_tokenizer, prompt, response, config, torch
+                    # Store the untemplated prompt: training applies the chat template once.
+                    score_columns: dict[str, Any]
+                    if teacher_score_mode == "pad_mcq":
+                        teacher_prompt = _teacher_prompt(teacher_tokenizer, prompt_value)
+                        score_columns = {
+                            "scores_mcq": _pad_mcq_scores(
+                                teacher,
+                                teacher_tokenizer,
+                                _instruction_text(prompt_value),
+                                responses,
+                                torch,
+                            ),
+                            "scores_avglogp": [
+                                _sequence_score(
+                                    teacher,
+                                    teacher_tokenizer,
+                                    teacher_prompt,
+                                    response,
+                                    config,
+                                    torch,
+                                )
+                                for response in responses
+                            ],
+                        }
+                        record.pop("teacher_scores", None)
+                    elif teacher_score_mode == "pairwise":
+                        score_columns = {
+                            "teacher_scores": _pairwise_scores(
+                                teacher, teacher_tokenizer, prompt, responses, torch
                             )
-                            for response in responses
-                        ]
+                        }
+                    elif teacher_score_mode == "sequence_logprob":
+                        score_columns = {
+                            "teacher_scores": [
+                                _sequence_score(
+                                    teacher, teacher_tokenizer, prompt, response, config, torch
+                                )
+                                for response in responses
+                            ]
+                        }
                     else:
                         raise ConfigurationError(
                             f"Unknown teacher score mode: {teacher_score_mode}"
                         )
-                    record.update(prompt=prompt, responses=responses, teacher_scores=scores)
+                    record.update(prompt=prompt_value, responses=list(responses), **score_columns)
                 elif objective in {"dckd", "tvkd"}:
                     if teacher is None:
                         raise ConfigurationError("DCKD/TVKD preparation requires teacher_model")

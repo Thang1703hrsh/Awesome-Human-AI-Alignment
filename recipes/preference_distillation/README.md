@@ -30,5 +30,8 @@ hai-align train --config recipes/preference_distillation/dckd.toml
 
 ADPA+ is reproduced by setting the `model` in `adpa.toml` to a DCKD checkpoint.
 CTPD needs a reference checkpoint during both preparation and training. PPD and
-VPD preparation can use `--student` to sample several on-policy responses or
-score responses that are already present in the input dataset.
+VPD are the two PAD objectives. Their preparation can use `--student` to sample
+several on-policy responses or score responses that are already present in the
+input dataset. `ppd.toml` and `vpd.toml` follow the authors' released
+configuration and enable `mcq_confidence_filter`, so prepare their data with
+`--teacher-score-mode pad_mcq`.

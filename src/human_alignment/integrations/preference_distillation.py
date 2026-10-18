@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import exp
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -168,6 +169,28 @@ def _teacher_scores(
             for score, other in zip(base, auxiliary)
         ]
     return base
+
+
+def _has_mixed_mcq_confidence(row: Mapping[str, Any]) -> bool:
+    """PAD's training filter: keep rows whose teacher is confident both ways.
+
+    Ported from ``filter`` in the reference ``scripts/run_pad.py``: at least one
+    selection probability ``exp(scores_mcq)`` above 0.5 and at least one at or below it.
+    """
+
+    values = row.get("scores_mcq")
+    if values is None:
+        raise DatasetFormatError("mcq_confidence_filter requires a scores_mcq column")
+    probabilities = [exp(float(value)) for value in values]
+    return any(value > 0.5 for value in probabilities) and any(
+        value <= 0.5 for value in probabilities
+    )
+
+
+def _filter_mcq_confidence(data: Any) -> Any:
+    if hasattr(data, "filter") and hasattr(data, "column_names"):
+        return data.filter(_has_mixed_mcq_confidence)
+    return [row for row in data if _has_mixed_mcq_confidence(row)]
 
 
 def _normalize_row(
@@ -667,6 +690,10 @@ class PreferenceDistillationBackend:
         )
         train_data = _materialize(dataset.data, split=split)
         eval_data = _materialize(eval_source, split=eval_split) if eval_source is not None else None
+        if config.mcq_confidence_filter:
+            train_data = _filter_mcq_confidence(train_data)
+            if eval_data is not None:
+                eval_data = _filter_mcq_confidence(eval_data)
         train_dataset = _TokenizedDataset(train_data, tokenizer, config)
         eval_dataset = (
             _TokenizedDataset(eval_data, tokenizer, config)

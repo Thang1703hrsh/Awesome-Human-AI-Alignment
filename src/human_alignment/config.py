@@ -179,6 +179,7 @@ class PreferenceDistillationConfig(TrainingConfig):
     teacher_score_key: str | None = None
     teacher_logprob_score_key: str | None = None
     teacher_score_mix: float = 0.0
+    mcq_confidence_filter: bool = False
     objective_weight: float = 1.0
     sft_weight: float = 0.0
     chosen_kd_weight: float = 0.0
@@ -207,6 +208,8 @@ class PreferenceDistillationConfig(TrainingConfig):
             raise ConfigurationError("max_prompt_length cannot exceed max_length")
         if not 0.0 <= self.teacher_score_mix <= 1.0:
             raise ConfigurationError("teacher_score_mix must be in [0, 1]")
+        if self.mcq_confidence_filter and self.objective not in {"vpd", "ppd"}:
+            raise ConfigurationError("mcq_confidence_filter applies only to VPD and PPD")
         if self.value_function not in {"entropy", "soft"}:
             raise ConfigurationError("value_function must be 'entropy' or 'soft'")
         if not 0.0 <= self.value_discount <= 1.0:

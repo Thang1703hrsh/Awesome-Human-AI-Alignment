@@ -209,7 +209,7 @@ def build_parser() -> argparse.ArgumentParser:
     distillation_parser.add_argument("--num-responses", type=int, default=4)
     distillation_parser.add_argument(
         "--teacher-score-mode",
-        choices=("sequence_logprob", "pairwise"),
+        choices=("sequence_logprob", "pairwise", "pad_mcq"),
         default="sequence_logprob",
     )
     distillation_parser.set_defaults(handler=_prepare_distillation)

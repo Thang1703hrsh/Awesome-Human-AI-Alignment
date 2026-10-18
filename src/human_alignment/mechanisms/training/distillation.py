@@ -159,12 +159,24 @@ class CTPD(PreferenceDistillation):
 
 
 class PPD(PreferenceDistillation):
+    """PAD's probabilistic variant (Gu et al., 2025, ``gu2025pad``).
+
+    Matches the teacher's Plackett-Luce ranking distribution by Jensen-Shannon
+    divergence. Prepare data with ``teacher_score_mode="pad_mcq"``.
+    """
+
     method_id = "ppd"
     default_objective = "ppd"
     default_output_dir = "outputs/ppd"
 
 
 class VPD(PreferenceDistillation):
+    """PAD's vanilla variant (Gu et al., 2025, ``gu2025pad``).
+
+    Maximizes the student's Plackett-Luce likelihood of the teacher's ranking.
+    Prepare data with ``teacher_score_mode="pad_mcq"``.
+    """
+
     method_id = "vpd"
     default_objective = "vpd"
     default_output_dir = "outputs/vpd"

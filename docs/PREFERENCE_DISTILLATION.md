@@ -36,6 +36,24 @@ run = VPD(
 The equivalent generic call is
 `PreferenceDistillation(..., config={"objective": "vpd"})`. The available
 convenience classes are `VPD`, `PPD`, `DCKD`, `TVKD`, `ADPA`, and `CTPD`.
+
+## Methods and papers
+
+These are the preference-distillation methods in the survey taxonomy
+(`paper/fig_taxo.tex`, *Supervised Alignment & Distillation*):
+
+| Paper (bib key) | Classes | Reference code |
+|---|---|---|
+| PAD, Gu et al. 2025 (`gu2025pad`) | `VPD`, `PPD` | [EganGu/PAD](https://github.com/EganGu/PAD) |
+| ADPA, Gao et al. 2025 (`gao2025adpa`) | `ADPA`; `DCKD` is the paper's dual-constrained KD baseline and the first stage of ADPA+ | [gaoshiping/ADPA](https://github.com/gaoshiping/ADPA) |
+| TVKD, Kwon et al. 2025 (`kwon2025tvkd`) | `TVKD` | accompanying research project |
+| CTPD, Nguyen et al. 2026 (`nguyen2026ctpd`) | `CTPD` | accompanying research project |
+
+PAD defines two objectives: Vanilla Preference Distillation (VPD, `loss_type: rd`
+in the authors' trainer) and Probabilistic Preference Distillation (PPD,
+`loss_type: pd`). The catalog keeps them under the `vpd` and `ppd` identifiers
+because `pad` already names the unrelated decoding-time personalization method
+(`chen2025pad`).
 Their no-argument objective weights preserve the corresponding migrated recipe
 defaults. Runtime parameters such as the learning rate, batch size, and output
 directory remain portable package defaults; an explicit configuration always
@@ -100,7 +118,20 @@ The same workflow performs the method-specific operation selected by
   then compute sparse teacher-reference log-ratio advantages;
 - CTPD: align fast-tokenizer offset spans and compute parent-token weights;
 - PPD/VPD: optionally sample multiple student candidates and score them using
-  teacher sequence log-probability or order-balanced pairwise judgments.
+  teacher sequence log-probability, order-balanced pairwise judgments, or PAD's
+  multiple-choice calibration (`pad_mcq`).
+
+`pad_mcq` reproduces the authors' `data_gen/gen/prob.py` and `prob_sl.py`. It
+shows every pair of candidates to the teacher as options A and B with the
+authors' MCQ prompt, and stores the log of each candidate's mean selection
+probability as `scores_mcq`. It also stores the teacher's length-normalized
+log-likelihood as `scores_avglogp`. Training then uses
+`(1 - teacher_score_mix) * scores_mcq + teacher_score_mix * scores_avglogp`;
+the default `teacher_score_mix = 0.0` matches the authors' released
+configuration (`alpha: 0.0`). Setting `mcq_confidence_filter = true` keeps only
+rows where at least one selection probability is above 0.5 and at least one
+is at or below 0.5, which is the filter `scripts/run_pad.py` applies before
+training.
 
 The corresponding CLI is:
 
@@ -109,10 +140,16 @@ hai-align prepare distillation vpd \
   --dataset HuggingFaceH4/ultrafeedback_binarized \
   --student models/student_sft \
   --teacher models/teacher_dpo \
-  --teacher-score-mode pairwise \
+  --teacher-score-mode pad_mcq \
   --num-responses 4 \
   --output data/preference-distillation
 ```
+
+The authors sample five responses per prompt at temperature 1.0 and top-p 0.95
+with vLLM, then keep the four most mutually distant by edit distance. This
+package samples `--num-responses` candidates directly; pass
+`generation_kwargs={"temperature": 1.0, "top_p": 0.95}` to match the sampling
+settings.
 
 Reproducible training configurations are provided under
 `recipes/preference_distillation/` for teacher SFT/DPO, student SFT, and all six
@@ -122,7 +159,7 @@ distillation objectives.
 
 | Objective | Required teacher signal | Main loss |
 |---|---|---|
-| VPD | `teacher_scores`, `scores_mcq`, or a teacher model | Likelihood of the teacher-induced Plackett-Luce ranking |
+| VPD | `teacher_scores`, `scores_mcq` (optionally mixed with `scores_avglogp`), or a teacher model | Likelihood of the teacher-induced Plackett-Luce ranking |
 | PPD | `teacher_scores`, `scores_mcq`, or a teacher model | Jensen-Shannon divergence between exact Plackett-Luce ranking distributions |
 | DCKD | `teacher_chosen_probs` and `teacher_rejected_probs` | Token-mean `KL(teacher || student)` over top-k bins plus residual mass |
 | TVKD | The DCKD token-probability columns | Value-based pairwise preference objective, optionally combined with token KL |
