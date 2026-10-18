@@ -34,12 +34,15 @@ def align(
     method_id = method.lower()
     runnable = {
         "ipo", "bpo", "tdpo", "tis_dpo", "ti_dpo", "tbpo_q", "tbpo_a",
+        "beta_dpo", "epsilon_dpo", "logits_sam", "ra_dpo", "adpo",
         "adpa",
         "ctpd",
         "dckd",
+        "dp3o",
         "dpo",
         "grpo",
         "kto",
+        "pbsd",
         "ppd",
         "ppo",
         "preference_distillation",

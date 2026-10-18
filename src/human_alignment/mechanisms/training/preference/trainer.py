@@ -1,6 +1,7 @@
 """HF Trainer implementation for native preference objectives."""
 
 import torch
+import torch.nn.functional as F
 from torch import nn
 from transformers import Trainer
 
@@ -18,16 +19,19 @@ class PreferenceModel(nn.Module):
         self.config = policy.config
         self.baseline = nn.Linear(policy.config.hidden_size, 1) if use_baseline else None
 
-    def forward(self, input_ids=None, attention_mask=None, inputs_embeds=None):
+    def forward(self, input_ids=None, attention_mask=None, inputs_embeds=None, return_hidden=False):
         out = self.policy(input_ids=input_ids, inputs_embeds=inputs_embeds,
                           attention_mask=attention_mask, use_cache=False,
-                          output_hidden_states=self.baseline is not None)
+                          output_hidden_states=self.baseline is not None or return_hidden)
         baselines = None
         if self.baseline is not None:
             # State features are detached, as in the released Q-TBPO implementation.
             hidden = out.hidden_states[-1].detach().to(self.baseline.weight.dtype)
             baselines = self.baseline(hidden).squeeze(-1)
-        return {"logits": out.logits, "baselines": baselines}
+        result = {"logits": out.logits, "baselines": baselines}
+        if return_hidden:
+            result["hidden"] = out.hidden_states[-1]
+        return result
 
     def gradient_checkpointing_enable(self, **kwargs):
         return self.policy.gradient_checkpointing_enable(**kwargs)
@@ -61,6 +65,43 @@ class NativePreferenceTrainer(Trainer):
         self.reference_model = self._prepare_frozen(reference_model)
         self.positive_model = self._prepare_frozen(positive_model) if positive_model is not None else None
         self.negative_model = self._prepare_frozen(negative_model) if negative_model is not None else None
+        # beta-DPO running gap statistics and epsilon-DPO's adaptive beta.
+        self.loss_state = {"beta": float(preference_config.beta), "step_sum": 0.0}
+
+    def _logits_sam_forward(self, model, policy, ids, attention, labels, reference):
+        """logits-SAM (Luo et al., 2026): one ascent step on the output layer only.
+
+        As in the released ``LogitsSAMTrainer.compute_loss``: the DPO gradient with
+        respect to clean logits gives ``grad_W = G^T H``; the head is evaluated at
+        ``W + rho * grad_W / ||grad_W||`` with the perturbation detached.
+        """
+        cfg = self.preference_config
+        output = model(input_ids=ids, attention_mask=attention, return_hidden=True)
+        hidden = output["hidden"]
+        head = policy.get_output_embeddings()
+        weight, bias = head.weight, getattr(head, "bias", None)
+        clean = F.linear(hidden.detach().to(weight.dtype), weight.detach(),
+                         bias.detach() if bias is not None else None).detach().requires_grad_(True)
+        loss_pre = preference_loss("logits_sam", clean, reference, labels, cfg).mean()
+        grad_logits, = torch.autograd.grad(loss_pre, clean)
+        grad_logits = grad_logits.reshape(-1, grad_logits.shape[-1])
+        grad_weight = grad_logits.t().matmul(hidden.detach().reshape(-1, hidden.shape[-1]).to(grad_logits.dtype))
+        if cfg.sam_adaptive:
+            # Released adaptive variant: element-wise scaling by |W| before normalizing.
+            grad_weight = grad_weight * weight.detach().abs().to(grad_weight.dtype)
+        perturbation = (grad_weight * (cfg.sam_rho / grad_weight.float().norm().clamp_min(1e-12))).to(weight.dtype)
+        logits = F.linear(hidden.to(weight.dtype), weight + perturbation.detach(), bias)
+        return {"logits": logits, "baselines": None}
+
+    def _update_epsilon_beta(self):
+        """epsilon-DPO: after each optimizer step, beta <- beta / (1 + eps * mean step)."""
+        steps = self.loss_state.pop("last_steps")
+        self.loss_state["step_sum"] += float(steps.float().mean()) / self.args.gradient_accumulation_steps
+        if self.accelerator.gradient_state.sync_gradients:
+            mean_steps = float(self.accelerator.gather(
+                torch.tensor(self.loss_state["step_sum"], device=self.accelerator.device)).mean())
+            self.loss_state["beta"] /= 1 + mean_steps * self.preference_config.epsilon
+            self.loss_state["step_sum"] = 0.0
 
     def _prepare_frozen(self, model):
         model.requires_grad_(False)
@@ -148,11 +189,20 @@ class NativePreferenceTrainer(Trainer):
                     valid &= labels[:, 1:].ne(self.processing_class.eos_token_id)
                     weights = torch.zeros_like(labels, dtype=torch.float32)
                     weights[:, 1:] = rank_weights(scores, valid)
-        output = model(input_ids=ids, attention_mask=attention)
         with torch.no_grad():
             reference = self.reference_model(input_ids=ids, attention_mask=attention, use_cache=False).logits
+        if self.method == "logits_sam":
+            output = self._logits_sam_forward(model, policy, ids, attention, labels, reference)
+        else:
+            output = model(input_ids=ids, attention_mask=attention)
         losses = preference_loss(self.method, output["logits"], reference, labels, cfg,
-                                 weights=weights, baselines=output["baselines"])
+                                 weights=weights, baselines=output["baselines"],
+                                 reward_diff=inputs.get("reward_diff"), state=self.loss_state)
+        if self.method == "epsilon_dpo":
+            if model.training:
+                self._update_epsilon_beta()
+            else:
+                self.loss_state.pop("last_steps", None)
         if self.method == "ti_dpo" and cfg.triplet_weight:
             n = len(ids) // 2
             ratios, _, _, valid = token_statistics(output["logits"], reference, labels)

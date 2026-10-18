@@ -110,3 +110,29 @@ class TransformersRewardModel:
         return self.score_batch([(prompt, response)])[0]
 
     __call__ = score
+
+
+def annotate_preference_pairs(
+    rows: Sequence[dict[str, Any]],
+    reward_model: Any,
+    *,
+    prefix: str = "proxy_",
+    prompt_key: str = "prompt",
+) -> list[dict[str, Any]]:
+    """Attach ``{prefix}chosen_rewards``/``{prefix}rejected_rewards`` scalar scores.
+
+    ``reward_model`` needs ``score_batch([(prompt, response), ...])``, e.g.
+    :class:`TransformersRewardModel`. Pass untemplated prompt and response text:
+    the reward model applies its own chat template. DP3O reads the default
+    ``proxy_`` columns as ``sigmoid(chosen - rejected)`` preference probabilities.
+    """
+
+    pairs = [(str(row[prompt_key]), str(row[side])) for row in rows for side in ("chosen", "rejected")]
+    scores = reward_model.score_batch(pairs)
+    if len(scores) != len(pairs):
+        raise ValueError("The reward model returned a score count that does not match the pairs")
+    return [
+        {**row, f"{prefix}chosen_rewards": float(scores[2 * i]),
+         f"{prefix}rejected_rewards": float(scores[2 * i + 1])}
+        for i, row in enumerate(rows)
+    ]

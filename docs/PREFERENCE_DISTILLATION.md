@@ -48,16 +48,89 @@ These are the preference-distillation methods in the survey taxonomy
 | ADPA, Gao et al. 2025 (`gao2025adpa`) | `ADPA`; `DCKD` is the paper's dual-constrained KD baseline and the first stage of ADPA+ | [gaoshiping/ADPA](https://github.com/gaoshiping/ADPA) |
 | TVKD, Kwon et al. 2025 (`kwon2025tvkd`) | `TVKD` | accompanying research project |
 | CTPD, Nguyen et al. 2026 (`nguyen2026ctpd`) | `CTPD` | accompanying research project |
+| DP3O, Zhang et al. 2026, TMLR (not yet in the survey) | `DP3O` | [onepounchman/DP3O](https://github.com/onepounchman/DP3O) |
+| PBSD, Yu et al. 2026, arXiv 2605.05040 (not yet in the survey) | `PBSD` | [LucasXinYu/PBSD](https://github.com/LucasXinYu/PBSD) |
+
+The convenience classes' no-argument objective weights preserve the
+corresponding migrated recipe defaults. Runtime parameters such as the learning
+rate, batch size, and output directory remain portable package defaults; an
+explicit configuration always takes precedence.
 
 PAD defines two objectives: Vanilla Preference Distillation (VPD, `loss_type: rd`
 in the authors' trainer) and Probabilistic Preference Distillation (PPD,
 `loss_type: pd`). The catalog keeps them under the `vpd` and `ppd` identifiers
 because `pad` already names the unrelated decoding-time personalization method
 (`chen2025pad`).
-Their no-argument objective weights preserve the corresponding migrated recipe
-defaults. Runtime parameters such as the learning rate, batch size, and output
-directory remain portable package defaults; an explicit configuration always
-takes precedence.
+
+### DP3O
+
+DP3O distills a learned preference model into offline DPO. A helper reward
+model, fitted on the preference data, gives each pair a soft target
+`p = sigmoid(r_chosen - r_rejected)`; the loss is
+
+```
+alpha * DPO(hard label) + (1 - alpha) * [-p log s(z) - (1 - p) log s(-z)],
+z = beta * (log-ratio_chosen - log-ratio_rejected)
+```
+
+as in the released `optimistic_dpo_loss`. `DP3O` runs on the native preference
+backend with `PreferenceOptimizationConfig(dp3o_alpha=..., dp3o_reward_type=...)`.
+Rows hold rendered `prompt`, `chosen`, and `rejected` text plus
+`proxy_chosen_rewards`/`proxy_rejected_rewards` (or `chosen_rewards`/
+`rejected_rewards` with `dp3o_reward_type="golden"`). Floats and one-element
+lists are both accepted. Score pairs with any reward model:
+
+```python
+from human_alignment import DP3O
+from human_alignment.integrations.reward_model import (
+    TransformersRewardModel, annotate_preference_pairs,
+)
+
+pairs = [{"prompt": "How do I boil an egg?", "chosen": "Simmer it for 9 minutes.", "rejected": "No idea."}]
+scored = annotate_preference_pairs(pairs, TransformersRewardModel.from_pretrained("models/proxy-rm"))
+DP3O(model="models/sft", dataset=scored, config={"dp3o_alpha": 0.2, "beta": 0.05}).train()
+```
+
+`annotate_preference_pairs` takes untemplated text so the reward model applies
+its own chat template. If the policy needs a chat template, render `prompt`,
+`chosen`, and `rejected` after scoring; the reward columns are kept.
+The authors' pipeline fits the helper reward model (Gemma-2B) with
+Bradley-Terry training and samples noisy labels from a stronger annotator; those
+data-preparation stages are not ported. `dp3o.toml` follows their
+`configs/policy.yaml` (alpha 0.2, beta 0.05, learning rate 1e-6).
+
+### PBSD
+
+PBSD uses one model as both teacher and student. The teacher is the frozen base
+model (LoRA adapters disabled) prompted with the problem and a reference
+solution. The student is the LoRA-adapted model prompted with the problem only.
+Each step samples a student rollout `y_s` and a teacher rollout `y_t` (or uses a
+precomputed `teacher_trajectory`) and minimizes
+
+```
+-log sigmoid(-beta * delta),
+delta = (T(y_t) - S(y_t)) - (T(y_s) - S(y_s)),
+```
+
+which is DPO with the teacher as reference, preferring `y_t` over `y_s`. The
+correctness gate keeps only pairs in which the teacher's boxed answer is correct
+and the student's is not (`math-verify`), or, with `task="tooluse"`, in which
+the gold `Action:` appears. `PBSDConfig` defaults and `pbsd.toml` follow
+`scripts/run_pbsd.sh`. Prompts, the verifier, and the loss are checked against
+the reference code.
+
+Rows need `problem` and `solution`; `Answer` overrides the gold answer that
+would otherwise be extracted from the solution's last `\boxed{}`. Install with
+`pip install -e ".[self_distillation]"`. Differences from the reference:
+
+- rollouts use `model.generate`; the reference's vLLM colocated path is omitted;
+- completions are scored through their first EOS and padding is never scored.
+  The reference scores one padding token when PAD differs from EOS (as in
+  Qwen3): after EOS, or after a rollout truncated at the generation limit;
+- with `use_lora = false`, a frozen copy of the initial model serves as teacher;
+  the reference requires LoRA;
+- math-verify timeouts are disabled on Windows, where its timeout fallback
+  cannot run; POSIX keeps the reference's 5-second limits.
 
 For VPD and PPD, a teacher can score candidates online when the dataset does
 not contain scores:

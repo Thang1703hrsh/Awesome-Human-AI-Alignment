@@ -93,6 +93,7 @@ REQUIRED_FIELDS = {
     "kto": ("prompt", "completion", "label"),
     "prompt": ("prompt",),
     "preference_distillation": (),
+    "self_distillation": ("problem", "solution"),
 }
 
 

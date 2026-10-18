@@ -95,7 +95,14 @@ class PreferenceBackend:
                 rows = load_dataset(rows, split=split)
         if not len(rows):
             raise ConfigurationError("Preference dataset must not be empty")
-        collator = PreferenceCollator(tokenizer, config.max_length, config.max_prompt_length)
+        reward_keys = None
+        if method == "dp3o" and config.dp3o_alpha < 1.0:
+            # Released DP3O columns: proxy_* from the fitted helper preference model,
+            # or the annotator's own chosen_/rejected_rewards for the golden ablation.
+            prefix = "proxy_" if config.dp3o_reward_type == "proxy" else ""
+            reward_keys = (f"{prefix}chosen_rewards", f"{prefix}rejected_rewards")
+        collator = PreferenceCollator(tokenizer, config.max_length, config.max_prompt_length,
+                                      reward_keys=reward_keys)
         # Preflight one row before allocating optimizer state.
         collator([rows[0]])
         wrapped = PreferenceModel(policy, use_baseline=method == "tbpo_q")

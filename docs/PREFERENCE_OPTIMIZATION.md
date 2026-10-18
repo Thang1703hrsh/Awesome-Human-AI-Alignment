@@ -1,7 +1,8 @@
 # Preference optimization methods
 
 The public API and `hai-align train` support `ipo`, `bpo`, `tdpo`, `tis_dpo`,
-`ti_dpo`, `tbpo_q`, and `tbpo_a`. These belong to Training-Time Alignment /
+`ti_dpo`, `tbpo_q`, `tbpo_a`, `beta_dpo`, `epsilon_dpo`, `logits_sam`, `ra_dpo`,
+and `adpo`. These belong to Training-Time Alignment /
 Preference Optimization. ARC-BPO is intentionally excluded.
 
 ```bash
@@ -49,6 +50,11 @@ training time.
 | `ti_dpo` | Released TDPO-based variant with gradient/Gaussian importance weights and generated-anchor triplet loss | [TI-DPO reference](https://github.com/gracefulning/TIDPO/blob/main/trainers.py) |
 | `tbpo_q` | Per-token Bregman risk with learned, centered state-baseline differences | [TokenRatio trainer](https://github.com/truongnd1/TBPO/blob/main/trainers.py) |
 | `tbpo_a` | Per-token Bregman risk with forward-KL advantage normalization | [TokenRatio paper](https://arxiv.org/abs/2605.12288) |
+| `beta_dpo` | Batch-calibrated beta and beta-guided filtering from running reward-gap statistics | [β-DPO reference](https://github.com/junkangwu/beta-DPO/blob/main/trainers.py) |
+| `epsilon_dpo` | Per-pair beta from logit perturbation; global beta updated per optimizer step | [ε-DPO reference](https://github.com/oddqueue/e-dpo/blob/main/trainer.py) |
+| `logits_sam` | DPO evaluated at a SAM ascent step on the output layer only | [logits-SAM reference](https://github.com/RitianLuo/logits-sam-dpo/blob/main/src/alignment/sam_trainer.py) |
+| `ra_dpo` | DPO with a sequential CVaR risk ratio (Ra-DPO1/Ra-DPO2) | [Ra-DPO reference](https://github.com/zlj123-max/Ra-DPO/blob/main/Ra-DPO/train/trainers.py) |
+| `adpo` | Bradley-Terry comparisons per response segment (adaptive or static) | [ADPO reference](https://github.com/stjohn2007/ADPO/blob/main/src/train/train_adpo.py) |
 
 Sources inspected on 2026-09-28. Implementations are expressed in the project's
 own backend; no external checkout or import of those repositories is required.
@@ -77,6 +83,56 @@ Q baselines are linear heads over detached final policy states, centered per
 pair and clipped. The baseline has its own learning-rate parameter group;
 optimizer type and schedule otherwise follow the policy's HF training arguments.
 This differs from the upstream separate, unscheduled baseline optimizer.
+
+### β-DPO, ε-DPO, logits-SAM, Ra-DPO, and ADPO
+
+These were inspected on 2026-10-18 and checked against the released loss code
+(β-DPO across successive steps of its running statistics, ε-DPO step
+directions, logits-SAM perturbed logits, both Ra-DPO variants with and without
+the vocabulary split, and ADPO adaptive/static sum/mean segmentation).
+
+- **β-DPO** keeps running means of the reward gap and its standard deviation
+  (momentum 0.9, initialized at zero) and updates them with each micro-batch
+  before sampling `1 - beta_dpo_filter_ratio` of its pairs with Gaussian weights.
+  The batch beta is `beta * (1 + a * (mean kept gap - running mean))`, clamped
+  at 1e-3. Micro-batches need at least two pairs. When every weight is zero or
+  undefined (the first step, where policy equals reference and the released
+  code divides 0 by 0), sampling is uniform. Statistics are per process; the
+  reference gathers them across processes. Like ε-DPO's beta, they are trainer
+  state and restart from zero on resume.
+- **ε-DPO** sets each pair's beta to `beta / (1 + eps * step)`, where `step` is
+  +1, -1, or 0 according to how perturbing the policy logits toward
+  `(1 ± eps)` mixtures with the reference moves the log ratio. After each
+  optimizer step the global beta is divided by `1 + eps * mean step`. The
+  adaptive beta is trainer state and restarts from `beta` on resume.
+- **logits-SAM** perturbs the output-layer weight by
+  `rho * grad_W / ||grad_W||`, with `grad_W = G^T H` from the gradient of the
+  clean DPO loss with respect to the logits, and backpropagates the DPO loss at
+  the perturbed head (`sam_rho`). `sam_adaptive = true` scales `grad_W` by `|W|`
+  before normalizing, as the released adaptive option. As in the reference, the
+  perturbed logits are `H (W + e)^T + b`, so model-specific logit post-processing
+  (for example Gemma-2 soft-capping) is not applied. The ZeRO-3 and chunked
+  paths are not ported.
+- **Ra-DPO** subtracts the rejected-minus-chosen risk ratio (Ra-DPO1) or
+  `ra_dpo_alpha` times it with the chosen term detached (Ra-DPO2). The risk
+  ratio sums, over response tokens, the reference-weighted entries of
+  `log p_ref - log p_policy` above their `1 - ra_dpo_confidence` quantile. With
+  `ra_dpo_split_vocabulary = true` (the released default) the quantile is taken
+  over each half of the vocabulary separately, exactly as the reference slices
+  the vocabulary axis. The quantile is computed with `kthvalue`, matching
+  `torch.quantile` but without its input-size limit. The released trainer sums
+  per-pair losses over the batch; this backend averages them, which only
+  rescales the learning rate. The alternative `is_cal_risk_distribution_logps`
+  risk mode (off in the released config) is not ported.
+- **ADPO** splits each response's log ratios into `adpo_segments` segments
+  (`adaptive`, the released default with 256), fixed `adpo_static_k`-token
+  chunks of the padded row (`static`), or single positions (`pass`), reduces
+  each by sum or mean, and averages the label-smoothed
+  `-log sigmoid(beta * (chosen segment - rejected segment))` over all segments.
+  For `pass`, the mean includes the released per-token array's extra leading
+  zero column. The released `segment_reduce_post` option has no effect on the
+  loss and is not exposed.
+  The authors train with LoRA r=16; pass `backend_options={"peft_config": ...}`.
 
 ## Dataset and token-weight contract
 

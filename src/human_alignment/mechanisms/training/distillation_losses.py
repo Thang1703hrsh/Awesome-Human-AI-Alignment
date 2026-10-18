@@ -386,3 +386,37 @@ def tvkd_loss(
         teacher_value_weight=teacher_value_weight,
     )
     return -F.logsigmoid(chosen_scores - rejected_scores)
+
+
+def pbsd_loss(
+    teacher_on_teacher: torch.Tensor,
+    student_on_teacher: torch.Tensor,
+    teacher_on_student: torch.Tensor,
+    student_on_student: torch.Tensor,
+    *,
+    beta: float = 0.1,
+    loss_type: str = "logistic_gap",
+    gate: torch.Tensor | None = None,
+) -> torch.Tensor:
+    """Preference-Based Self-Distillation objective (Yu et al., 2026).
+
+    Arguments are sequence log-probabilities of the teacher rollout ``y_t`` and the
+    student rollout ``y_s`` under the frozen teacher context and the trainable
+    student. With ``delta = (T(y_t) - S(y_t)) - (T(y_s) - S(y_s))``, the released
+    ``logistic_gap`` loss ``-log sigmoid(-beta * delta)`` is DPO with the teacher as
+    reference, preferring ``y_t`` over ``y_s``. ``gate`` (1 = keep) averages over
+    kept pairs only; a microbatch with no kept pair yields a zero loss.
+    """
+
+    delta = (teacher_on_teacher - student_on_teacher) - (teacher_on_student - student_on_student)
+    if loss_type == "logistic_gap":
+        losses = -F.logsigmoid(-beta * delta)
+    elif loss_type == "mse":
+        losses = (torch.sigmoid(delta) - 0.5) ** 2
+    elif loss_type == "mse_to_zero":
+        losses = delta * delta
+    else:
+        raise ValueError(f"Unknown PBSD loss type: {loss_type}")
+    if gate is None:
+        gate = torch.ones_like(delta)
+    return (losses * gate).sum() / gate.sum().clamp(min=1.0)

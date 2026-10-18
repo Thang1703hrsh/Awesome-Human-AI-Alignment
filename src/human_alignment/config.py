@@ -103,11 +103,43 @@ class PreferenceOptimizationConfig(TrainingConfig):
     triplet_weight: float = 0.1
     triplet_margin: float = 0.1
     anchor_max_new_tokens: int = 64
+    dp3o_alpha: float = 0.2
+    dp3o_reward_type: str = "proxy"
+    beta_dpo_a: float = 0.6
+    beta_dpo_filter_ratio: float = 0.2
+    beta_dpo_momentum: float = 0.9
+    epsilon: float = 0.01
+    sam_rho: float = 0.05
+    sam_adaptive: bool = False
+    ra_dpo_variant: int = 1
+    ra_dpo_alpha: float = 0.5
+    ra_dpo_confidence: float = 0.95
+    ra_dpo_split_vocabulary: bool = True
+    adpo_granularity: str = "adaptive"
+    adpo_segments: int = 256
+    adpo_static_k: int = 32
+    adpo_segment_reduce: str = "sum"
 
     def __post_init__(self) -> None:
         import math
 
         super().__post_init__()
+        if not 0.0 <= self.beta_dpo_filter_ratio < 1.0 or not 0.0 <= self.beta_dpo_momentum < 1.0:
+            raise ConfigurationError("beta_dpo_filter_ratio and beta_dpo_momentum must be in [0, 1)")
+        if not 0.0 < self.epsilon < 1.0 or self.sam_rho <= 0:
+            raise ConfigurationError("epsilon must be in (0, 1) and sam_rho positive")
+        if self.ra_dpo_variant not in {1, 2} or not 0.0 < self.ra_dpo_confidence < 1.0:
+            raise ConfigurationError("ra_dpo_variant must be 1 or 2 and ra_dpo_confidence in (0, 1)")
+        if (self.adpo_granularity not in {"adaptive", "static", "pass"}
+                or self.adpo_segment_reduce not in {"sum", "mean"}):
+            raise ConfigurationError(
+                "adpo_granularity must be adaptive/static/pass and adpo_segment_reduce sum/mean")
+        if self.adpo_segments < 1 or self.adpo_static_k < 1:
+            raise ConfigurationError("adpo_segments and adpo_static_k must be positive")
+        if not 0.0 <= self.dp3o_alpha <= 1.0:
+            raise ConfigurationError("dp3o_alpha must be in [0, 1]")
+        if self.dp3o_reward_type not in {"proxy", "golden"}:
+            raise ConfigurationError("dp3o_reward_type must be 'proxy' or 'golden'")
         for name in ("beta", "bregman_lambda", "bregman_scale", "log_ratio_clip",
                      "baseline_clip", "baseline_learning_rate", "prior_sigma_div"):
             value = getattr(self, name)
@@ -161,6 +193,55 @@ class GRPOConfig(TrainingConfig):
             raise ConfigurationError("GRPO num_generations must be at least 2")
         if self.max_completion_length < 1:
             raise ConfigurationError("GRPO max_completion_length must be positive")
+
+
+@dataclass(frozen=True)
+class PBSDConfig(TrainingConfig):
+    """Preference-Based Self-Distillation (Yu et al., 2026).
+
+    Defaults follow the authors' ``scripts/run_pbsd.sh`` (Qwen3-4B-Instruct-2507,
+    LoRA r=64/alpha=128, ``beta=0.1``, sampling T=1.1/top-p 0.95/top-k 20).
+    ``max_length`` bounds tokenized prompts.
+    """
+
+    learning_rate: float = 1e-5
+    max_length: int | None = 20000
+    beta: float = 0.1
+    pairwise_loss_type: str = "logistic_gap"
+    normalize_logprob_by_length: bool = False
+    correctness_gate: bool = True
+    teacher_use_reference: bool = False
+    task: str = "math"
+    student_think_mode: str = "auto"
+    teacher_think_mode: str = "auto"
+    student_max_new_tokens: int = 4096
+    teacher_max_new_tokens: int = 4096
+    temperature: float = 1.1
+    top_p: float = 0.95
+    top_k: int = 20
+    use_lora: bool = True
+    lora_r: int = 64
+    lora_alpha: int = 128
+    lora_target_modules: tuple[str, ...] = (
+        "q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj",
+    )
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if self.pairwise_loss_type not in {"logistic_gap", "mse_to_zero", "mse"}:
+            raise ConfigurationError(f"Unknown pairwise_loss_type: {self.pairwise_loss_type}")
+        if self.task not in {"math", "tooluse"}:
+            raise ConfigurationError("PBSD task must be 'math' or 'tooluse'")
+        for name in ("student_think_mode", "teacher_think_mode"):
+            if getattr(self, name) not in {"auto", "enabled", "disabled"}:
+                raise ConfigurationError(f"{name} must be 'auto', 'enabled', or 'disabled'")
+        if self.beta <= 0 or self.temperature <= 0 or not 0 < self.top_p <= 1 or self.top_k < 0:
+            raise ConfigurationError("Invalid PBSD beta or sampling parameters")
+        if min(self.student_max_new_tokens, self.teacher_max_new_tokens) < 1:
+            raise ConfigurationError("PBSD generation lengths must be positive")
+        if self.use_lora and (self.lora_r < 1 or self.lora_alpha < 1 or not self.lora_target_modules):
+            raise ConfigurationError("PBSD LoRA requires positive rank/alpha and target modules")
+        object.__setattr__(self, "lora_target_modules", tuple(self.lora_target_modules))
 
 
 DistillationObjective = Literal["dckd", "tvkd", "adpa", "ctpd", "ppd", "vpd"]

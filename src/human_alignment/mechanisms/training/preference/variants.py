@@ -54,3 +54,33 @@ class TBPOQ(NativePreferenceMethod):
 class TBPOA(NativePreferenceMethod):
     method_id = backend_method = "tbpo_a"
     default_output_dir = "outputs/tbpo_a"
+
+
+class BetaDPO(NativePreferenceMethod):
+    """beta-DPO (Wu et al., 2024): batch-level dynamic beta with beta-guided filtering."""
+    method_id = backend_method = "beta_dpo"
+    default_output_dir = "outputs/beta_dpo"
+
+
+class EpsilonDPO(NativePreferenceMethod):
+    """epsilon-DPO (Lee et al., 2025): per-pair KL penalty control via logit perturbation."""
+    method_id = backend_method = "epsilon_dpo"
+    default_output_dir = "outputs/epsilon_dpo"
+
+
+class LogitsSAM(NativePreferenceMethod):
+    """logits-SAM DPO (Luo et al., 2026): sharpness-aware minimization on the output layer."""
+    method_id = backend_method = "logits_sam"
+    default_output_dir = "outputs/logits_sam"
+
+
+class RaDPO(NativePreferenceMethod):
+    """Ra-DPO (Zhang et al., 2025): DPO with a nested-risk (CVaR) sequential risk ratio."""
+    method_id = backend_method = "ra_dpo"
+    default_output_dir = "outputs/ra_dpo"
+
+
+class ADPO(NativePreferenceMethod):
+    """Autoregressive DPO (Oi et al., 2026): Bradley-Terry comparisons per response segment."""
+    method_id = backend_method = "adpo"
+    default_output_dir = "outputs/adpo"

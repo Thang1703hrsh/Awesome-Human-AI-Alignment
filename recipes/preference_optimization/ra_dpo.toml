@@ -1,0 +1,22 @@
+# Ra-DPO with the authors' config/loss/ra-dpo.yaml (Ra-DPO1, confidence 0.95,
+# vocabulary-split risk ratio) and HH_py28_risk_config.yaml learning rate.
+method = "ra_dpo"
+model = "models/pythia-2.8b-sft"
+dataset = "data/preference_pairs.jsonl"
+output_dir = "outputs/ra_dpo"
+
+[training]
+beta = 0.1
+ra_dpo_variant = 1
+ra_dpo_alpha = 0.5
+ra_dpo_confidence = 0.95
+ra_dpo_split_vocabulary = true
+learning_rate = 5e-6
+epochs = 1.0
+batch_size = 4
+gradient_accumulation_steps = 8
+max_length = 512
+max_prompt_length = 256
+
+[training.extra_args]
+warmup_steps = 150

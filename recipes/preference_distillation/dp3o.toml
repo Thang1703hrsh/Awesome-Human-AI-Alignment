@@ -1,0 +1,25 @@
+# DP3O with the authors' configs/policy.yaml settings (Pythia-2.8B SFT policy on
+# Anthropic HH-RLHF, effective batch 2 x 8 per device). Rows need rendered prompt,
+# chosen, and rejected text plus proxy_chosen_rewards/proxy_rejected_rewards from a
+# helper preference model (see annotate_preference_pairs).
+method = "dp3o"
+model = "models/pythia-2.8b-sft"
+dataset = "data/hh-rlhf-proxy-scored"
+output_dir = "outputs/dp3o"
+
+[training]
+beta = 0.05
+dp3o_alpha = 0.2
+dp3o_reward_type = "proxy"
+learning_rate = 1e-6
+epochs = 1.0
+batch_size = 2
+gradient_accumulation_steps = 8
+max_length = 1024
+max_prompt_length = 512
+
+[training.extra_args]
+lr_scheduler_type = "cosine"
+warmup_ratio = 0.1
+bf16 = true
+gradient_checkpointing = true

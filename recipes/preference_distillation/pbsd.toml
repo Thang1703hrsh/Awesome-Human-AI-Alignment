@@ -1,0 +1,34 @@
+# PBSD with the authors' scripts/run_pbsd.sh settings (Qwen3-4B-Instruct-2507,
+# thinking disabled, LoRA r=64/alpha=128). Rows need problem and solution; Answer
+# and a precomputed teacher_trajectory are optional. Requires the
+# self_distillation extra (peft, math-verify).
+method = "pbsd"
+model = "Qwen/Qwen3-4B-Instruct-2507"
+dataset = "data/pbsd-math"
+output_dir = "outputs/pbsd"
+
+[training]
+beta = 0.1
+learning_rate = 1e-5
+batch_size = 2
+gradient_accumulation_steps = 8
+max_length = 20000
+pairwise_loss_type = "logistic_gap"
+correctness_gate = true
+teacher_use_reference = false
+normalize_logprob_by_length = false
+student_think_mode = "disabled"
+teacher_think_mode = "disabled"
+student_max_new_tokens = 4096
+teacher_max_new_tokens = 4096
+temperature = 1.1
+top_p = 0.95
+top_k = 20
+lora_r = 64
+lora_alpha = 128
+
+[training.extra_args]
+max_steps = 100
+save_steps = 50
+logging_steps = 1
+bf16 = true

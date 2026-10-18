@@ -8,6 +8,7 @@ from human_alignment.config import (
     PreferenceOptimizationConfig,
     GRPOConfig,
     KTOConfig,
+    PBSDConfig,
     PPOConfig,
     PreferenceDistillationConfig,
     SFTConfig,
@@ -15,12 +16,15 @@ from human_alignment.config import (
 )
 from human_alignment.mechanisms.training import (
     BPO, IPO, TDPO, TIDPO, TISDPO, TBPOA, TBPOQ,
+    ADPO, BetaDPO, EpsilonDPO, LogitsSAM, RaDPO,
     ADPA,
     CTPD,
     DCKD,
+    DP3O,
     DPO,
     GRPO,
     KTO,
+    PBSD,
     PPD,
     PPO,
     SFT,
@@ -61,6 +65,7 @@ from human_alignment.workflows import (
 from human_alignment.safety import run_safety_config, run_safety_method, safety_methods
 
 __all__ = [
+    "ADPO", "BetaDPO", "EpsilonDPO", "LogitsSAM", "RaDPO",
     "BPO", "IPO", "IPOConfig", "PreferenceOptimizationConfig",
     "TDPO", "TIDPO", "TISDPO", "TBPOA", "TBPOQ",
     "ADPA",
@@ -88,6 +93,8 @@ __all__ = [
     "KTO",
     "KTOConfig",
     "KTOExample",
+    "PBSD",
+    "PBSDConfig",
     "PPO",
     "PPOConfig",
     "PPD",

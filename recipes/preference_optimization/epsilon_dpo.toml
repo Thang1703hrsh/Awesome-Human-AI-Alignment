@@ -1,0 +1,21 @@
+# epsilon-DPO with the authors' configs/mistral_instruct.yaml settings.
+method = "epsilon_dpo"
+model = "mistralai/Mistral-7B-Instruct-v0.2"
+dataset = "princeton-nlp/mistral-instruct-ultrafeedback"
+output_dir = "outputs/epsilon_dpo"
+
+[training]
+beta = 0.01
+epsilon = 0.01
+learning_rate = 3e-7
+epochs = 1.0
+batch_size = 1
+gradient_accumulation_steps = 8
+max_length = 2048
+max_prompt_length = 1800
+
+[training.extra_args]
+lr_scheduler_type = "cosine"
+warmup_ratio = 0.1
+bf16 = true
+gradient_checkpointing = true

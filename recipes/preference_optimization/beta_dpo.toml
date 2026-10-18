@@ -1,0 +1,19 @@
+# beta-DPO settings from the authors' README (Pythia-2.8B SFT on Anthropic HH):
+# beta 0.1, filtering ratio 0.2, scaling factor a 0.6. Use at least two pairs per
+# micro-batch; the gap statistics need a batch standard deviation.
+method = "beta_dpo"
+model = "models/pythia-2.8b-sft"
+dataset = "data/preference_pairs.jsonl"
+output_dir = "outputs/beta_dpo"
+
+[training]
+beta = 0.1
+beta_dpo_a = 0.6
+beta_dpo_filter_ratio = 0.2
+beta_dpo_momentum = 0.9
+learning_rate = 1e-6
+epochs = 1.0
+batch_size = 32
+gradient_accumulation_steps = 2
+max_length = 512
+max_prompt_length = 256

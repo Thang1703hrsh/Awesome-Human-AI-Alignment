@@ -11,12 +11,36 @@ class PreferenceCollator:
     nonnegative importance weights, not upstream signed contrastive scores.
     """
 
-    def __init__(self, tokenizer, max_length=1024, max_prompt_length=128):
+    def __init__(self, tokenizer, max_length=1024, max_prompt_length=128, reward_keys=None):
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.max_prompt_length = max_prompt_length
+        # (chosen_key, rejected_key) of scalar preference-model scores for DP3O.
+        self.reward_keys = reward_keys
+
+    @staticmethod
+    def _scalar_reward(value, key):
+        # The released DP3O data stores rewards as floats or one-element lists.
+        if isinstance(value, (list, tuple)):
+            if len(value) != 1:
+                raise ValueError(f"{key} must be a scalar or a one-element list")
+            value = value[0]
+        value = float(value)
+        if value != value or value in (float("inf"), float("-inf")):
+            raise ValueError(f"{key} must be finite")
+        return value
 
     def encode(self, row):
+        result = self._encode_tokens(row)
+        if self.reward_keys is not None:
+            chosen_key, rejected_key = self.reward_keys
+            if chosen_key not in row or rejected_key not in row:
+                raise ValueError(f"DP3O requires {chosen_key} and {rejected_key} columns")
+            result["reward_diff"] = (self._scalar_reward(row[chosen_key], chosen_key)
+                                     - self._scalar_reward(row[rejected_key], rejected_key))
+        return result
+
+    def _encode_tokens(self, row):
         result = {}
         if "chosen_input_ids" in row:
             for side in ("chosen", "rejected"):
@@ -88,4 +112,7 @@ class PreferenceCollator:
                 result[f"{side}_{key}"] = torch.tensor(value, dtype=torch.long)
             if weights:
                 result[f"{side}_weights"] = torch.tensor(weights, dtype=torch.float32)
+        if self.reward_keys is not None:
+            result["reward_diff"] = torch.tensor([row["reward_diff"] for row in features],
+                                                 dtype=torch.float32)
         return result

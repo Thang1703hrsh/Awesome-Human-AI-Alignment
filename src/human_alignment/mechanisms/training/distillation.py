@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from typing import Any, Callable, Mapping, Sequence
 
-from human_alignment.config import PreferenceDistillationConfig
+from human_alignment.config import PBSDConfig, PreferenceDistillationConfig
 from human_alignment.exceptions import ConfigurationError
 from human_alignment.mechanisms.training.base import TrainingMethodBase
+from human_alignment.mechanisms.training.preference.variants import NativePreferenceMethod
 from human_alignment.results import AlignmentRun
 from human_alignment.specification.targets import AlignmentSpecification
 from human_alignment.types import SupervisionSignal, TaxonomyTrace
@@ -168,6 +169,45 @@ class PPD(PreferenceDistillation):
     method_id = "ppd"
     default_objective = "ppd"
     default_output_dir = "outputs/ppd"
+
+
+class DP3O(NativePreferenceMethod):
+    """Distilled Preference Probability Policy Optimization (Zhang et al., 2026).
+
+    Offline DPO whose targets mix hard labels with ``sigmoid`` reward gaps from a
+    learned helper preference model (``dp3o_alpha`` weights the hard term). Pairs
+    need ``proxy_chosen_rewards``/``proxy_rejected_rewards``; see
+    ``integrations.reward_model.annotate_preference_pairs``.
+    """
+
+    method_id = backend_method = "dp3o"
+    mechanism_categories = ("alignment_distillation",)
+    default_output_dir = "outputs/dp3o"
+
+
+class PBSD(TrainingMethodBase):
+    """Preference-Based Self-Distillation (Yu et al., 2026).
+
+    One model is teacher and student: the frozen base model sees the problem and a
+    reference solution, the LoRA student sees only the problem. Each step samples
+    both rollouts and applies a DPO-style loss that prefers the teacher rollout,
+    with the teacher as reference, gated to pairs where only the teacher is
+    correct. Rows need ``problem`` and ``solution``; ``Answer`` and a precomputed
+    ``teacher_trajectory`` are optional.
+    """
+
+    method_id = backend_method = "pbsd"
+    dataset_kind = "self_distillation"
+    config_type = PBSDConfig
+    supervision_categories = ("programmatic_verifiable_feedback",)
+    mechanism_categories = ("alignment_distillation",)
+    default_output_dir = "outputs/pbsd"
+
+    @staticmethod
+    def _backend() -> Any:
+        from human_alignment.integrations.self_distillation import PBSDBackend
+
+        return PBSDBackend()
 
 
 class VPD(PreferenceDistillation):

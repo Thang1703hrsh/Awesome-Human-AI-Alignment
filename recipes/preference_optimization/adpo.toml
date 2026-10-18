@@ -1,0 +1,22 @@
+# ADPO with the authors' src/configs/train_config.py (Llama-3-8B on GSM8K pairs):
+# adaptive granularity, 256 segments, per-segment sum, beta 1.0.
+method = "adpo"
+model = "meta-llama/Meta-Llama-3-8B"
+dataset = "data/gsm8k_preference_pairs.jsonl"
+output_dir = "outputs/adpo"
+
+[training]
+beta = 1.0
+adpo_granularity = "adaptive"
+adpo_segments = 256
+adpo_segment_reduce = "sum"
+learning_rate = 2e-5
+epochs = 3.0
+batch_size = 2
+gradient_accumulation_steps = 4
+max_length = 1500
+max_prompt_length = 512
+
+[training.extra_args]
+warmup_ratio = 0.1
+weight_decay = 0.01

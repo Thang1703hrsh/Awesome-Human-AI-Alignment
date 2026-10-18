@@ -23,8 +23,16 @@ class ConfigTests(unittest.TestCase):
     def test_all_distillation_recipes_load(self):
         paths = Path("recipes/preference_distillation").glob("*.toml")
         recipes = [load_config(path) for path in paths]
-        self.assertEqual(len(recipes), 9)
-        self.assertIn("dckd", {recipe.method for recipe in recipes})
+        self.assertEqual(len(recipes), 11)
+        self.assertTrue({"dckd", "dp3o", "pbsd"} <= {recipe.method for recipe in recipes})
+
+    def test_new_distillation_recipes_build_typed_configs(self):
+        from human_alignment.config import PBSDConfig, PreferenceOptimizationConfig
+
+        dp3o = load_config("recipes/preference_distillation/dp3o.toml")
+        self.assertEqual(PreferenceOptimizationConfig(**dp3o.parameters).dp3o_alpha, 0.2)
+        pbsd = load_config("recipes/preference_distillation/pbsd.toml")
+        self.assertEqual(PBSDConfig(**pbsd.parameters).teacher_think_mode, "disabled")
 
 
 if __name__ == "__main__":

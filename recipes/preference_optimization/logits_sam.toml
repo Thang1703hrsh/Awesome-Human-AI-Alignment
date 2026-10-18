@@ -1,0 +1,21 @@
+# logits-SAM on the alignment-handbook zephyr-7b-beta DPO recipe, with the
+# README's example radius --sam_rho 1e-3.
+method = "logits_sam"
+model = "alignment-handbook/zephyr-7b-sft-full"
+dataset = "HuggingFaceH4/ultrafeedback_binarized"
+output_dir = "outputs/logits_sam"
+
+[training]
+beta = 0.01
+sam_rho = 1e-3
+learning_rate = 5e-7
+epochs = 1.0
+batch_size = 8
+gradient_accumulation_steps = 2
+max_length = 1024
+max_prompt_length = 512
+
+[training.extra_args]
+lr_scheduler_type = "cosine"
+warmup_ratio = 0.1
+bf16 = true
