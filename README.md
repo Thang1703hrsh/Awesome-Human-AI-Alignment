@@ -432,7 +432,7 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 | Feedback Source | [Programmatic & Verifiable Feedback](#programmatic-verifiable-feedback) | 22 |
 | Feedback & Oversight | [Demonstrations & Preferences](#demonstrations-preferences) | 24 |
 | Feedback & Oversight | [Critique, Process & Trajectory Feedback](#critique-process-trajectory-feedback) | 19 |
-| Feedback & Oversight | [Reliable & Scalable Oversight](#reliable-scalable-oversight) | 25 |
+| Feedback & Oversight | [Reliable & Scalable Oversight](#reliable-scalable-oversight) | 26 |
 
 <a id="feedback-source"></a>
 
@@ -577,9 +577,10 @@ Papers are sorted by year within each branch. Each entry links to the publicatio
 
 <a id="reliable-scalable-oversight"></a>
 
-#### Reliable & Scalable Oversight (25)
+#### Reliable & Scalable Oversight (26)
 
 - **2026** · [Agentic Oversight via Dialectic Reasoning](https://aclanthology.org/2026.acl-long.1143/) — Ranaldi et al. · `ranaldi2026agentic` · Paper
+- **2026** · [Beyond Human Measure: ASI Should Be Guided by Open-World Alignment](https://doi.org/10.20944/preprints202604.1749.v1) — He et al. · `he2026beyondhumanmeasure` · DOI
 - **2026** · [Selective Weak-to-Strong Generalization](https://doi.org/10.1609/aaai.v40i44.41089) — Lang et al. · `lang2026selective` · DOI
 - **2026** · [Towards Scalable Oversight via Partitioned Human Supervision](https://iclr.cc/virtual/2026/poster/10010265) — Yin et al. · `yin2026partitioned` · Paper
 - **2026** · [Truthfulness Despite Weak Supervision: Evaluating and Training LLMs Using Peer Prediction](https://proceedings.iclr.cc/paper_files/paper/2026/hash/650f33fdfaa83f432b9cfa2a2b45d663-Abstract-Conference.html) — Qiu et al. · `qiu2026peerprediction` · Paper
