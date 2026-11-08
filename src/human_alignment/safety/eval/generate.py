@@ -99,7 +99,7 @@ def generate_rows(
     rows = list(rows)
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w") as fh:
+    with output.open("w", encoding="utf-8") as fh:
         for start in range(0, len(rows), batch_size):
             chunk = rows[start : start + batch_size]
             prompts = [format_prompt(r["prompt"], template) for r in chunk]
